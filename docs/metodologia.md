@@ -2,7 +2,7 @@
 
 ## 1. Como o Projeto Foi Desenvolvido
 
-Este projeto foi desenvolvido individualmente por um estudante de Engenharia de Software, como parte da disciplina PIT II.
+Este projeto foi desenvolvido por mim mesmo, como parte da disciplina PIT II.
 
 Para organizar o trabalho, eu utilizei o **Scrum de forma adaptada para projeto individual** — sem papéis fictícios como Product Owner ou Scrum Master, e sem equipe. A ideia foi só pegar emprestados alguns conceitos úteis do Scrum:
 
