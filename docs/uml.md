@@ -1,101 +1,107 @@
 # UML - Cupcake Gourmet
 
-## 1. Diagrama de Casos de Uso
+Este documento apresenta os principais diagramas UML utilizados no projeto para representar as funcionalidades do sistema e a estrutura básica dos dados.
 
-Mostra as interações dos dois tipos de usuário com o sistema.
+## 1. Diagrama de Caso de Uso
+
+O diagrama mostra as principais ações que podem ser realizadas pelo cliente e pelo administrador.
 
 ```mermaid
-usecaseDiagram
-    actor Cliente
-    actor Administrador
+flowchart LR
+    Cliente((Cliente))
+    Admin((Administrador))
 
-    usecase "Visualizar Produtos" as UC1
-    usecase "Buscar Produtos" as UC1b
-    usecase "Adicionar ao Carrinho" as UC2
-    usecase "Alterar Quantidade" as UC3
-    usecase "Remover Produto" as UC4
-    usecase "Realizar Pedido" as UC5
-    usecase "Consultar Status do Pedido" as UC6
+    Cliente --> P1[Visualizar produtos]
+    Cliente --> P2[Realizar pedido]
+    Cliente --> P3[Consultar pedido]
 
-    usecase "Cadastrar Produto" as UC7
-    usecase "Editar Produto" as UC8
-    usecase "Excluir Produto" as UC9
-    usecase "Visualizar Pedidos" as UC10
-    usecase "Alterar Status do Pedido" as UC11
-
-    Cliente --> UC1
-    Cliente --> UC1b
-    Cliente --> UC2
-    Cliente --> UC3
-    Cliente --> UC4
-    Cliente --> UC5
-    Cliente --> UC6
-
-    Administrador --> UC7
-    Administrador --> UC8
-    Administrador --> UC9
-    Administrador --> UC10
-    Administrador --> UC11
+    Admin --> A1[Gerenciar produtos]
+    Admin --> A2[Visualizar pedidos]
+    Admin --> A3[Alterar status do pedido]
 ```
 
 ### Explicação
 
-- **Cliente:** Pessoa acessando a parte pública do site (comprar e consultar pedidos).
-- **Administrador:** Pessoa responsável por gerenciar o catálogo e os pedidos.
-- **Buscar Produtos:** Filtro simples por nome, aplicado diretamente na tela do catálogo.
+**Cliente**
+
+O cliente pode visualizar os produtos disponíveis, realizar um pedido e consultar o andamento do pedido.
+
+**Administrador**
+
+O administrador pode gerenciar os produtos cadastrados, visualizar os pedidos realizados e alterar o status dos pedidos.
+
+A opção de realizar pedido inclui as etapas de adicionar produtos ao carrinho, alterar quantidades, remover produtos e informar os dados da compra.
 
 ---
 
 ## 2. Diagrama de Classes
 
-Representa as 3 entidades principais do sistema e como elas se relacionam.
+O diagrama apresenta as principais classes utilizadas para representar os produtos e pedidos do sistema.
 
 ```mermaid
 classDiagram
+
     class Product {
-        +int id
-        +String name
-        +String description
-        +float price
-        +String category
-        +String image
+        id
+        name
+        description
+        price
+        category
+        image
     }
 
     class Order {
-        +int id
-        +String customer_name
-        +String phone
-        +String address
-        +String number
-        +String complement
-        +String neighborhood
-        +String payment_method
-        +String observation
-        +float total
-        +int status
-        +String created_at
+        id
+        customer_name
+        phone
+        address
+        number
+        complement
+        neighborhood
+        payment_method
+        observation
+        total
+        status
+        created_at
     }
 
     class OrderItem {
-        +int id
-        +int order_id
-        +int product_id
-        +int quantity
-        +float price
+        id
+        order_id
+        product_id
+        quantity
+        price
     }
 
-    Order "1" --> "*" OrderItem : contém
-    OrderItem "*" --> "1" Product : referencia
+    Order "1" --> "*" OrderItem : possui
+    OrderItem "*" --> "1" Product : refere-se a
 ```
 
-### Explicação
+### Explicação das classes
 
-| Classe | Descrição |
-|--------|-----------|
-| **Product** | Representa cada cupcake do catálogo, com nome, descrição, preço, categoria e imagem. |
-| **Order** | Representa o pedido finalizado, com dados do cliente, pagamento, observação, total e status. |
-| **OrderItem** | Cada item dentro de um pedido (quantos de cada produto foram comprados e o preço na hora). |
+| Classe        | Descrição                                           |
+| ------------- | --------------------------------------------------- |
+| **Product**   | Representa os cupcakes disponíveis para venda.      |
+| **Order**     | Representa um pedido realizado pelo cliente.        |
+| **OrderItem** | Representa cada produto que faz parte de um pedido. |
 
-**Relacionamentos:**
-- 1 pedido pode ter *muitos* itens (`Order 1 -- * OrderItem`).
-- Cada item referencia *1* produto do catálogo (`OrderItem * -- 1 Product`).
+### Relacionamentos
+
+* Um **Order** pode possuir vários **OrderItem**.
+* Cada **OrderItem** está relacionado a um **Product**.
+* Um produto pode aparecer em vários itens de pedidos diferentes.
+
+## 3. Relação com o banco de dados
+
+A modelagem foi feita de forma simples e está relacionada às tabelas utilizadas no banco SQLite:
+
+* `Product` → `products`
+* `Order` → `orders`
+* `OrderItem` → `order_items`
+
+Essa estrutura permite registrar os produtos da loja e os pedidos realizados pelos clientes.
+
+## 4. Considerações
+
+Os diagramas foram elaborados de acordo com as principais funcionalidades implementadas no sistema. A modelagem foi mantida simples para facilitar o desenvolvimento e a compreensão do projeto.
+
