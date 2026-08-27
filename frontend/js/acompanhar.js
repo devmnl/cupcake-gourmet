@@ -52,6 +52,15 @@ async function buscarPedido() {
         document.getElementById('rPag').textContent = p.payment_method;
         document.getElementById('rData').textContent = new Date(p.created_at).toLocaleString('pt-BR');
 
+        const obs = p.observation && p.observation.trim();
+        const linhaObs = document.getElementById('linhaObs');
+        if (obs) {
+            document.getElementById('rObs').textContent = obs;
+            linhaObs.classList.remove('escondido');
+        } else {
+            linhaObs.classList.add('escondido');
+        }
+
         desenharStatus(p.status);
 
         document.getElementById('rItens').innerHTML = p.items.map(i =>

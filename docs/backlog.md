@@ -41,6 +41,11 @@ Lista das tarefas planejadas e o status de cada uma:
 | PB-33 | Escrever README do repositório | Alta | 4 | Concluído |
 | PB-34 | Criar requirements.txt e .gitignore | Alta | 4 | Concluído |
 | PB-35 | Testar manualmente e corrigir bugs | Alta | 4 | Concluído |
+| PB-36 | Adicionar busca simples por nome nos produtos | Média | 4 | Concluído |
+| PB-37 | Adicionar campo "Observação" no pedido | Média | 4 | Concluído |
+| PB-38 | Realizar 5 testes com colegas | Alta | 4 | Pendente |
+| PB-39 | Registrar problemas no laudo e corrigir | Alta | 4 | Pendente |
+| PB-40 | Gravar vídeo final de apresentação | Alta | 4 | Pendente |
 
 ---
 
@@ -62,7 +67,7 @@ O projeto foi organizado em 4 ciclos curtos (Sprints) de aproximadamente 1 seman
 
 ### Sprint 4 — Testes, Correções e Documentação
 - Objetivo: finalizar detalhes e entregar tudo documentado
-- Entregas: responsividade, tratamento de erros, testes básicos, documentação em `docs/`, README, requirements e .gitignore
+- Entregas: responsividade, tratamento de erros, busca simples, observação no pedido, testes básicos, documentação em `docs/`, README, requirements e .gitignore
 
 ---
 

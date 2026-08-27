@@ -57,6 +57,7 @@ async function enviarPedido(e) {
     const bai  = document.getElementById('neighborhood').value.trim();
     const pg   = document.getElementById('payment_method').value;
     const comp = document.getElementById('complement').value.trim();
+    const obs  = document.getElementById('observation').value.trim();
 
     if (!nome || !tel || !end || !num || !bai || !pg) return erro('Preencha todos os campos obrigatorios.');
     if (!telValido(tel)) return erro('Telefone invalido.');
@@ -82,7 +83,7 @@ async function enviarPedido(e) {
             body: JSON.stringify({
                 customer_name: nome, phone: tel, address: end, number: num,
                 complement: comp, neighborhood: bai, payment_method: pg,
-                total: total, items: itens
+                observation: obs, total: total, items: itens
             })
         });
         const d = await r.json();

@@ -27,6 +27,14 @@
         <section class="secao">
             <h2>Nosso Cardápio</h2>
             <p style="text-align: center; color: #6b5144; margin-bottom: 2rem;">Escolha seus cupcakes favoritos e monte seu pedido!</p>
+
+            <div style="max-width: 500px; margin: 0 auto 2rem;">
+                <div class="campo">
+                    <label for="buscaProduto">🔍 Buscar cupcake</label>
+                    <input type="text" id="buscaProduto" placeholder="Digite o nome do produto..." oninput="filtrarProdutos()">
+                </div>
+            </div>
+
             <div class="produtos-grid" id="produtosGrid">
                 <div class="carregando" style="grid-column: 1 / -1;">Carregando produtos...</div>
             </div>

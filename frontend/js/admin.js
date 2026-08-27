@@ -161,6 +161,7 @@ async function verPedido(id) {
             <div class="linha-detalhe"><span class="label-detalhe">Endereco:</span> ${o.address}, ${o.number}${o.complement ? ' - ' + o.complement : ''}</div>
             <div class="linha-detalhe"><span class="label-detalhe">Bairro:</span> ${o.neighborhood}</div>
             <div class="linha-detalhe"><span class="label-detalhe">Pagamento:</span> ${o.payment_method}</div>
+            ${o.observation && o.observation.trim() ? `<div class="linha-detalhe"><span class="label-detalhe">Observação:</span> ${o.observation}</div>` : ''}
             <div class="linha-detalhe"><span class="label-detalhe">Status:</span> <span class="status-tag status-${o.status}">${o.status_text}</span></div>
             <div class="linha-detalhe"><span class="label-detalhe">Data:</span> ${d.toLocaleString('pt-BR')}</div>
             <h4 style="margin-top:15px; margin-bottom:8px; color:#c44569;">Itens</h4>

@@ -38,10 +38,11 @@ O sistema foi desenvolvido utilizando tecnologias simples e amplamente ensinadas
 ### Para o Cliente
 - Visualizar página inicial e produtos em destaque
 - Visualizar catálogo completo de cupcakes
+- Buscar produtos por nome no catálogo
 - Adicionar produtos ao carrinho
 - Alterar quantidade ou remover itens do carrinho
 - Visualizar subtotal e total
-- Finalizar pedido preenchendo dados do cliente e escolhendo pagamento
+- Finalizar pedido preenchendo dados do cliente, observação e escolhendo pagamento
 - Receber o número do pedido após a compra
 - Consultar o andamento do pedido por número
 
@@ -98,7 +99,7 @@ cupcake-gourmet/
 O banco SQLite é criado automaticamente na primeira vez que o servidor roda, com 3 tabelas:
 
 - **products**: id, name, description, price, category, image
-- **orders**: id, customer_name, phone, address, number, complement, neighborhood, payment_method, total, status, created_at
+- **orders**: id, customer_name, phone, address, number, complement, neighborhood, payment_method, observation, total, status, created_at
 - **order_items**: id, order_id, product_id, quantity, price
 
 São cadastrados 6 cupcakes iniciais para demonstração (Chocolate, Morango, Red Velvet, Baunilha, Nutella e Limão).

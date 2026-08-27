@@ -68,6 +68,7 @@ try:
             'complement': '',
             'neighborhood': 'Centro',
             'payment_method': 'Dinheiro',
+            'observation': 'Entregar sem cobertura de morango.',
             'total': total,
             'items': itens
         }
@@ -89,10 +90,10 @@ try:
         falhar('Pedido não criado no teste anterior.')
     else:
         p = get(f'/orders/{pedido_id}')
-        if p['id'] == pedido_id and 'items' in p and p['customer_name'] == 'Aluno Teste':
-            passou(f'Pedido #{p["id"]} consultado. Cliente: {p["customer_name"]}, Itens: {len(p["items"])}, Status: {p["status_text"]}')
+        if p['id'] == pedido_id and 'items' in p and p['customer_name'] == 'Aluno Teste' and 'Entregar sem cobertura' in p.get('observation', ''):
+            passou(f'Pedido #{p["id"]} consultado. Cliente: {p["customer_name"]}, Itens: {len(p["items"])}, Observacao: {p["observation"]}, Status: {p["status_text"]}')
         else:
-            falhar('Dados do pedido não conferem.')
+            falhar('Dados do pedido não conferem (faltando observation?).')
 except Exception as e:
     falhar(f'Erro: {e}')
 

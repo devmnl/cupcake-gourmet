@@ -44,10 +44,16 @@ def criar_banco():
         complement TEXT,
         neighborhood TEXT NOT NULL,
         payment_method TEXT NOT NULL,
+        observation TEXT,
         total REAL NOT NULL,
         status INTEGER NOT NULL DEFAULT 1,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )''')
+
+    try:
+        conn.execute('ALTER TABLE orders ADD COLUMN observation TEXT')
+    except Exception:
+        pass
 
     c.execute('''CREATE TABLE IF NOT EXISTS order_items (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -213,10 +219,11 @@ def criar_pedido():
         conn = conectar()
         c = conn.cursor()
         c.execute(
-            '''INSERT INTO orders (customer_name, phone, address, number, complement, neighborhood, payment_method, total, status)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)''',
+            '''INSERT INTO orders (customer_name, phone, address, number, complement, neighborhood, payment_method, observation, total, status)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)''',
             (d['customer_name'], d['phone'], d['address'], d['number'],
-             d.get('complement', ''), d['neighborhood'], d['payment_method'], d['total'])
+             d.get('complement', ''), d['neighborhood'], d['payment_method'],
+             d.get('observation', ''), d['total'])
         )
         pedido_id = c.lastrowid
         for item in d['items']:

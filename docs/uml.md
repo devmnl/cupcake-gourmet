@@ -10,6 +10,7 @@ usecaseDiagram
     actor Administrador
 
     usecase "Visualizar Produtos" as UC1
+    usecase "Buscar Produtos" as UC1b
     usecase "Adicionar ao Carrinho" as UC2
     usecase "Alterar Quantidade" as UC3
     usecase "Remover Produto" as UC4
@@ -23,6 +24,7 @@ usecaseDiagram
     usecase "Alterar Status do Pedido" as UC11
 
     Cliente --> UC1
+    Cliente --> UC1b
     Cliente --> UC2
     Cliente --> UC3
     Cliente --> UC4
@@ -40,6 +42,7 @@ usecaseDiagram
 
 - **Cliente:** Pessoa acessando a parte pública do site (comprar e consultar pedidos).
 - **Administrador:** Pessoa responsável por gerenciar o catálogo e os pedidos.
+- **Buscar Produtos:** Filtro simples por nome, aplicado diretamente na tela do catálogo.
 
 ---
 
@@ -67,6 +70,7 @@ classDiagram
         +String complement
         +String neighborhood
         +String payment_method
+        +String observation
         +float total
         +int status
         +String created_at
@@ -89,7 +93,7 @@ classDiagram
 | Classe | Descrição |
 |--------|-----------|
 | **Product** | Representa cada cupcake do catálogo, com nome, descrição, preço, categoria e imagem. |
-| **Order** | Representa o pedido finalizado, com dados do cliente, pagamento, total e status. |
+| **Order** | Representa o pedido finalizado, com dados do cliente, pagamento, observação, total e status. |
 | **OrderItem** | Cada item dentro de um pedido (quantos de cada produto foram comprados e o preço na hora). |
 
 **Relacionamentos:**

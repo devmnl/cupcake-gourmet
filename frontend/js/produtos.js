@@ -1,4 +1,5 @@
 const API = 'http://localhost:5000/api';
+let listaProdutos = [];
 
 function moeda(v) {
     return 'R$ ' + parseFloat(v).toFixed(2).replace('.', ',');
@@ -24,28 +25,41 @@ function adicionarCarrinho(idProduto) {
     alert('Produto adicionado!');
 }
 
+function desenharProdutos(produtos) {
+    const grid = document.getElementById('produtosGrid');
+    if (!grid) return;
+    if (produtos.length === 0) {
+        grid.innerHTML = '<p style="text-align:center; grid-column:1/-1; color:#8b7355;">Nenhum produto encontrado.</p>';
+        return;
+    }
+    grid.innerHTML = produtos.map(p => `
+        <div class="produto-card">
+            <img src="${p.image}" alt="${p.name}" class="produto-img">
+            <div class="produto-info">
+                <span class="produto-categoria">${p.category}</span>
+                <div class="produto-nome">${p.name}</div>
+                <p class="produto-desc">${p.description}</p>
+                <div class="produto-preco">${moeda(p.price)}</div>
+                <button class="btn btn-pequeno" onclick="adicionarCarrinho(${p.id})">Adicionar ao carrinho</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function filtrarProdutos() {
+    const termo = document.getElementById('buscaProduto')?.value.trim().toLowerCase() || '';
+    if (!termo) return desenharProdutos(listaProdutos);
+    const filtro = listaProdutos.filter(p => p.name.toLowerCase().includes(termo) || p.description.toLowerCase().includes(termo));
+    desenharProdutos(filtro);
+}
+
 async function carregarProdutos() {
     const grid = document.getElementById('produtosGrid');
     if (!grid) return;
     try {
         const resp = await fetch(API + '/products');
-        const produtos = await resp.json();
-        if (produtos.length === 0) {
-            grid.innerHTML = '<p style="text-align:center; grid-column:1/-1; color:#8b7355;">Nenhum produto cadastrado.</p>';
-            return;
-        }
-        grid.innerHTML = produtos.map(p => `
-            <div class="produto-card">
-                <img src="${p.image}" alt="${p.name}" class="produto-img">
-                <div class="produto-info">
-                    <span class="produto-categoria">${p.category}</span>
-                    <div class="produto-nome">${p.name}</div>
-                    <p class="produto-desc">${p.description}</p>
-                    <div class="produto-preco">${moeda(p.price)}</div>
-                    <button class="btn btn-pequeno" onclick="adicionarCarrinho(${p.id})">Adicionar ao carrinho</button>
-                </div>
-            </div>
-        `).join('');
+        listaProdutos = await resp.json();
+        desenharProdutos(listaProdutos);
     } catch (e) {
         grid.innerHTML = '<p style="text-align:center; grid-column:1/-1; color:#c53030;">Nao foi possivel carregar os produtos. O servidor esta rodando?</p>';
     }
