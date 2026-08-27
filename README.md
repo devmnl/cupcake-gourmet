@@ -100,7 +100,8 @@ cupcake-gourmet/
 │   └── evidencias/
 │
 ├── tests/
-│   └── test_api.py
+│   ├── test_api.py
+│   └── test_unitario.py
 │
 ├── requirements.txt
 ├── .gitignore
@@ -185,11 +186,34 @@ O banco de dados SQLite é criado automaticamente quando o sistema é iniciado p
 
 ## Testes
 
-Foram preparados testes básicos para verificar algumas funções da API.
+Foram preparados dois conjuntos de testes para verificar o funcionamento do sistema:
 
-Também existe um arquivo específico para registrar os testes realizados com cinco colegas, conforme solicitado na PIT II.
+### Testes unitários
 
-Os resultados desses testes serão preenchidos após a realização dos testes reais.
+Os testes unitários foram criados utilizando a biblioteca `unittest` do Python, que já vem instalada por padrão (não precisa de dependência extra).
+
+O arquivo [tests/test_unitario.py](file:///c:/Users/USER/Desktop/PIT/cupcake-gourmet/tests/test_unitario.py) possui **32 testes** divididos em 4 grupos:
+
+* conexão e criação do banco de dados (7 testes);
+* mapeamento dos status do pedido (4 testes);
+* endpoints de produtos (10 testes);
+* endpoints de pedidos (11 testes).
+
+Para rodar os testes unitários, basta abrir o terminal na pasta do projeto e executar:
+
+```bash
+python -m unittest tests.test_unitario -v
+```
+
+Não é necessário iniciar o servidor Flask separadamente, pois os testes utilizam o cliente de teste do próprio Flask e criam um banco de dados temporário que é apagado depois.
+
+### Testes de API (testes reais)
+
+Também existe o arquivo `tests/test_api.py` com 4 testes básicos que se conectam diretamente à API (precisa do Flask rodando em `http://localhost:5000`).
+
+### Testes com colegas
+
+Existe também um arquivo específico em `docs/testes.md` para registrar os testes realizados com cinco colegas, conforme solicitado na PIT II. Os resultados serão preenchidos após a realização dos testes reais.
 
 ## Documentação
 
