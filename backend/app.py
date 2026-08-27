@@ -55,6 +55,8 @@ def criar_banco():
     except Exception:
         pass
 
+    conn.commit()
+
     c.execute('''CREATE TABLE IF NOT EXISTS order_items (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         order_id INTEGER NOT NULL,
@@ -68,17 +70,28 @@ def criar_banco():
     c.execute('SELECT COUNT(*) FROM products')
     if c.fetchone()[0] == 0:
         produtos_iniciais = [
-            ('Cupcake de Chocolate', 'Cupcake de chocolate com recheio e cobertura.', 8.50, 'Chocolate', 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=chocolate%20cupcake%20frosting&image_size=square_hd'),
-            ('Cupcake de Morango', 'Cupcake de baunilha com morango fresco.', 9.00, 'Frutas', 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=strawberry%20cupcake%20cream&image_size=square_hd'),
-            ('Cupcake Red Velvet', 'Cupcake red velvet com cream cheese.', 10.00, 'Especiais', 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=red%20velvet%20cupcake&image_size=square_hd'),
-            ('Cupcake de Baunilha', 'Cupcake classico de baunilha.', 7.50, 'Classicos', 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=vanilla%20cupcake%20frosting&image_size=square_hd'),
-            ('Cupcake de Nutella', 'Cupcake com recheio de Nutella.', 11.00, 'Especiais', 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=nutella%20cupcake&image_size=square_hd'),
-            ('Cupcake de Limao', 'Cupcake de limao siciliano.', 8.00, 'Frutas', 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=lemon%20cupcake&image_size=square_hd')
+            ('Cupcake de Chocolate', 'Cupcake de chocolate com recheio e cobertura.', 8.50, 'Chocolate', 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop&q=80'),
+            ('Cupcake de Morango', 'Cupcake de baunilha com morango fresco.', 9.00, 'Frutas', 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=600&auto=format&fit=crop&q=80'),
+            ('Cupcake Red Velvet', 'Cupcake red velvet com cream cheese.', 10.00, 'Especiais', 'https://images.unsplash.com/photo-1587668178277-295251f900ce?w=600&auto=format&fit=crop&q=80'),
+            ('Cupcake de Baunilha', 'Cupcake classico de baunilha.', 7.50, 'Classicos', 'https://images.unsplash.com/photo-1519869325930-281384150729?w=600&auto=format&fit=crop&q=80'),
+            ('Cupcake de Nutella', 'Cupcake com recheio de Nutella.', 11.00, 'Especiais', 'https://images.unsplash.com/photo-1562440499-64c9a111f713?w=600&auto=format&fit=crop&q=80'),
+            ('Cupcake de Limao', 'Cupcake de limao siciliano.', 8.00, 'Frutas', 'https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=600&auto=format&fit=crop&q=80')
         ]
         c.executemany(
             'INSERT INTO products (name, description, price, category, image) VALUES (?, ?, ?, ?, ?)',
             produtos_iniciais
         )
+    else:
+        novas_imagens = {
+            'Cupcake de Chocolate': 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop&q=80',
+            'Cupcake de Morango':  'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=600&auto=format&fit=crop&q=80',
+            'Cupcake Red Velvet':  'https://images.unsplash.com/photo-1587668178277-295251f900ce?w=600&auto=format&fit=crop&q=80',
+            'Cupcake de Baunilha': 'https://images.unsplash.com/photo-1519869325930-281384150729?w=600&auto=format&fit=crop&q=80',
+            'Cupcake de Nutella':  'https://images.unsplash.com/photo-1562440499-64c9a111f713?w=600&auto=format&fit=crop&q=80',
+            'Cupcake de Limao':    'https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=600&auto=format&fit=crop&q=80'
+        }
+        for nome, url in novas_imagens.items():
+            c.execute('UPDATE products SET image = ? WHERE name = ? AND image LIKE ?', (url, nome, 'https://coresg%'))
 
     conn.commit()
     conn.close()
