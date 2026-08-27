@@ -4,13 +4,21 @@
 
 Este projeto foi desenvolvido por mim mesmo, como parte da disciplina PIT II.
 
-Para organizar o trabalho, eu utilizei o **Scrum de forma adaptada para projeto individual** — sem papéis fictícios como Product Owner ou Scrum Master, e sem equipe. A ideia foi só pegar emprestados alguns conceitos úteis do Scrum:
+Para organizar o trabalho, utilizei o **Scrum de forma adaptada para um projeto individual**, sem papéis fictícios como Product Owner ou Scrum Master e sem equipe. A ideia foi utilizar alguns conceitos do Scrum que ajudassem na organização do desenvolvimento:
 
-- **Backlog:** Uma lista com todas as tarefas que precisavam ser feitas, organizadas por prioridade.
-- **Sprints:** Dividi o trabalho em 4 ciclos curtos de aproximadamente 1 semana cada.
-- **Revisão:** No fim de cada Sprint, eu testava o que foi feito e ajustava o que precisava.
+- **Backlog:** uma lista com as tarefas que precisavam ser realizadas, organizadas por prioridade.
+- **Sprints:** dividi o desenvolvimento em 4 ciclos curtos, de aproximadamente 1 semana cada.
+- **Revisão:** ao final de cada Sprint, eu verificava o que havia sido desenvolvido e fazia os ajustes necessários.
 
-Essa abordagem serviu para não deixar tudo para a última semana e garantir que o projeto fosse avançando aos poucos.
+Durante o desenvolvimento, também utilizei **ferramentas de Inteligência Artificial como apoio à programação**. A IA foi utilizada de forma auxiliar, principalmente para ajudar em algumas partes do código, sugerir soluções para problemas e esclarecer dúvidas durante o desenvolvimento.
+
+As decisões sobre as funcionalidades, estrutura do projeto e alterações realizadas foram feitas por mim. Eu também revisei e testei o código gerado antes de utilizá-lo no projeto.
+
+Dessa forma, a IA foi utilizada como uma ferramenta de apoio à implementação, semelhante a contar com uma ajuda técnica para algumas tarefas específicas, enquanto eu fiquei responsável por orientar o que deveria ser feito, analisar as sugestões e integrar as partes ao projeto.
+
+Essa abordagem também ajudou no aprendizado, pois durante o desenvolvimento eu pude analisar as soluções sugeridas e entender melhor como as diferentes partes do sistema funcionavam.
+
+O objetivo foi utilizar a IA como apoio, e não como substituição do desenvolvimento e das decisões do projeto.
 
 ---
 
