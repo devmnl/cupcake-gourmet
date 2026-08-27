@@ -40,7 +40,7 @@ async function buscarPedido() {
     if (!id || id < 1) return mostrarErro('Informe um numero valido.');
 
     try {
-        const r = await fetch(API_A + '/orders/' + id);
+        const r = await fetch(API + '/orders/' + id);
         if (!r.ok) {
             const d = await r.json().catch(() => ({}));
             return mostrarErro(d.error || 'Pedido nao encontrado.');
