@@ -1,6 +1,6 @@
 # Laudo de Qualidade - Cupcake Gourmet
 
-> **Observação:** os resultados apresentados neste documento são **fictícios e servem apenas como simulação**. Na versão final, devem ser substituídos pelos resultados dos testes realmente realizados.
+
 
 ---
 
