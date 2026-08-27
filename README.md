@@ -1,80 +1,92 @@
-# Cupcake Gourmet - PIT II
+# 🧁 Cupcake Gourmet
 
-Projeto acadêmico desenvolvido para a disciplina **Projeto Integrador Transdisciplinar II (PIT II)** do curso de Engenharia de Software.
+Projeto desenvolvido para a disciplina **Projeto Integrador Transdisciplinar II (PIT II)** do curso de Engenharia de Software.
 
-O sistema é uma loja online simples de cupcakes, onde o cliente pode visualizar produtos, montar um carrinho, finalizar pedidos e acompanhar o status. Também possui uma área administrativa para gerenciar produtos e pedidos.
+## Sobre o projeto
 
----
+O Cupcake Gourmet é um sistema web simples para uma loja de cupcakes. A ideia surgiu a partir da situação-problema trabalhada na PIT I, na qual foi proposta uma solução para ajudar uma loja a realizar seus pedidos pela internet.
+
+Na PIT I foram realizados o levantamento dos requisitos, histórias de usuário, backlog, modelagem e prototipação. Nesta etapa, a proposta foi colocada em prática por meio do desenvolvimento do sistema.
+
+O cliente pode visualizar os cupcakes, adicionar produtos ao carrinho, fazer um pedido e consultar o andamento da entrega. Também foi criada uma área simples para o administrador controlar os produtos e os pedidos.
 
 ## Objetivo
 
-Colocar em prática o planejamento realizado na PIT I, desenvolvendo um sistema web funcional que atenda aos requisitos levantados. O foco está no aprendizado das tecnologias básicas da web e na integração entre front-end, back-end e banco de dados.
+Desenvolver uma aplicação simples para colocar em prática os conhecimentos estudados durante o curso, principalmente na parte de desenvolvimento web, banco de dados e organização de requisitos.
 
----
-
-## Tecnologias Utilizadas
-
-O sistema foi desenvolvido utilizando tecnologias simples e amplamente ensinadas na faculdade:
+## Tecnologias utilizadas
 
 ### Front-end
-- **HTML5** — estrutura das páginas
-- **CSS3** — estilização visual com tema de cupcakes
-- **JavaScript puro** — interações do usuário, carrinho em `localStorage` e requisições para a API
+
+* HTML5
+* CSS3
+* JavaScript
 
 ### Back-end
-- **Python 3** — linguagem de programação
-- **Flask** — microframework para criar a API REST
-- **Flask-CORS** — permite a comunicação entre front e back-end
 
-### Banco de Dados
-- **SQLite** — banco em arquivo, sem necessidade de instalar servidor
+* Python
+* Flask
 
-*Não foram utilizados frameworks de front-end como React, Vue, Angular, nem TypeScript, Node.js, Bootstrap ou Tailwind.*
+### Banco de dados
 
----
+* SQLite
 
-## Funcionalidades
+O JavaScript utiliza `fetch()` para enviar e receber informações da API criada com Flask. O carrinho utiliza `localStorage` para guardar os produtos temporariamente.
 
-### Para o Cliente
-- Visualizar página inicial e produtos em destaque
-- Visualizar catálogo completo de cupcakes
-- Buscar produtos por nome no catálogo
-- Adicionar produtos ao carrinho
-- Alterar quantidade ou remover itens do carrinho
-- Visualizar subtotal e total
-- Finalizar pedido preenchendo dados do cliente, observação e escolhendo pagamento
-- Receber o número do pedido após a compra
-- Consultar o andamento do pedido por número
+## Principais funcionalidades
 
-### Para o Administrador
-- Visualizar lista de produtos
-- Cadastrar novo produto
-- Editar produto existente
-- Excluir produto
-- Visualizar todos os pedidos
-- Alterar status do pedido (Recebido → Preparação → Saiu para entrega → Entregue)
+### Cliente
 
----
+* Visualizar a página inicial
+* Visualizar os cupcakes disponíveis
+* Buscar um produto pelo nome
+* Adicionar produtos ao carrinho
+* Alterar a quantidade dos produtos
+* Remover produtos do carrinho
+* Ver o valor total da compra
+* Informar os dados para realizar o pedido
+* Escolher a forma de pagamento
+* Adicionar uma observação ao pedido
+* Receber o número do pedido
+* Consultar o status do pedido
 
-## Estrutura Básica
+### Administrador
 
-```
+* Visualizar produtos
+* Cadastrar produtos
+* Editar produtos
+* Excluir produtos
+* Visualizar pedidos
+* Ver os detalhes dos pedidos
+* Alterar o status dos pedidos
+
+Os status utilizados são:
+
+1. Pedido recebido
+2. Em preparação
+3. Saiu para entrega
+4. Entregue
+
+## Estrutura do projeto
+
+```text
 cupcake-gourmet/
-├── frontend/              # páginas do site (abrir no navegador)
-│   ├── index.html         # página inicial
-│   ├── produtos.html      # catálogo de cupcakes
-│   ├── carrinho.html      # carrinho de compras
-│   ├── finalizar.html     # finalização do pedido
-│   ├── acompanhar.html    # consulta de status
-│   ├── admin.html         # painel administrativo
-│   ├── css/style.css      # estilos visuais
-│   └── js/                # scripts JavaScript
 │
-├── backend/               # API Python + Flask
-│   ├── app.py             # toda a API + criação do banco
-│   └── cupcake.db         # arquivo SQLite (gerado automaticamente)
+├── frontend/
+│   ├── index.html
+│   ├── produtos.html
+│   ├── carrinho.html
+│   ├── finalizar.html
+│   ├── acompanhar.html
+│   ├── admin.html
+│   ├── css/
+│   └── js/
 │
-├── docs/                  # documentação acadêmica da PIT II
+├── backend/
+│   ├── app.py
+│   └── cupcake.db
+│
+├── docs/
 │   ├── requisitos.md
 │   ├── historias-usuario.md
 │   ├── backlog.md
@@ -87,70 +99,125 @@ cupcake-gourmet/
 │   ├── roteiro-video.md
 │   └── evidencias/
 │
-├── tests/test_api.py      # 4 testes básicos da API
-├── requirements.txt       # dependências Python
-└── README.md              # este arquivo
+├── tests/
+│   └── test_api.py
+│
+├── requirements.txt
+├── .gitignore
+└── README.md
 ```
 
----
+## Banco de dados
 
-## Banco de Dados
+Foi utilizado o **SQLite**, por ser um banco simples e adequado para o tamanho deste projeto.
 
-O banco SQLite é criado automaticamente na primeira vez que o servidor roda, com 3 tabelas:
+O sistema utiliza três tabelas principais:
 
-- **products**: id, name, description, price, category, image
-- **orders**: id, customer_name, phone, address, number, complement, neighborhood, payment_method, observation, total, status, created_at
-- **order_items**: id, order_id, product_id, quantity, price
+### products
 
-São cadastrados 6 cupcakes iniciais para demonstração (Chocolate, Morango, Red Velvet, Baunilha, Nutella e Limão).
+Armazena os produtos da loja.
 
----
+* id
+* name
+* description
+* price
+* category
+* image
 
-## Como Executar
+### orders
 
-### 1. Instalar as dependências
-Abra o terminal na pasta raiz do projeto e execute:
-```
+Armazena os pedidos realizados.
+
+* id
+* customer_name
+* phone
+* address
+* number
+* complement
+* neighborhood
+* payment_method
+* observation
+* total
+* status
+* created_at
+
+### order_items
+
+Armazena os produtos de cada pedido.
+
+* id
+* order_id
+* product_id
+* quantity
+* price
+
+## Como executar
+
+### 1. Instalar o Python
+
+É necessário ter o Python instalado no computador.
+
+### 2. Instalar as dependências
+
+Abra o terminal na pasta do projeto e execute:
+
+```bash
 pip install -r requirements.txt
 ```
 
-### 2. Iniciar o servidor back-end
-```
-cd backend
-python app.py
-```
+### 3. Iniciar o sistema
 
-O servidor ficará disponível em `http://localhost:5000`.
+Execute:
 
-### 3. Abrir o site
-Dê duplo clique no arquivo `frontend/index.html` para abrir no navegador.
-
-> Importante: deixe o back-end rodando enquanto estiver usando o site.
-
-### 4. Rodar os testes básicos (opcional)
-Com o backend rodando:
-```
-python tests/test_api.py
+```bash
+python backend/app.py
 ```
 
----
+O Flask iniciará o servidor.
 
-## Melhorias Futuras
+Depois acesse no navegador:
 
-Algumas ideias para melhorar o projeto depois da entrega:
-- Login e senha para o administrador
-- Integração com pagamento real (Pix, cartão)
-- Envio de e-mail ou WhatsApp com atualização do status
-- Avaliações dos clientes nos produtos
-- Cupons de desconto e promoções
-- Gráficos de vendas na área administrativa
+```text
+http://localhost:5000
+```
 
----
+O banco de dados SQLite é criado automaticamente quando o sistema é iniciado pela primeira vez.
+
+## Testes
+
+Foram preparados testes básicos para verificar algumas funções da API.
+
+Também existe um arquivo específico para registrar os testes realizados com cinco colegas, conforme solicitado na PIT II.
+
+Os resultados desses testes serão preenchidos após a realização dos testes reais.
 
 ## Documentação
 
-A documentação acadêmica completa está na pasta `docs/`, contendo requisitos, histórias de usuário, backlog, diagramas UML, wireframes, metodologia, estrutura para testes com colegas, laudo de qualidade, sugestões de deploy e roteiro do vídeo de apresentação.
+Os documentos utilizados no desenvolvimento do projeto estão na pasta `docs/`.
+
+Nela estão os requisitos, histórias de usuário, backlog, metodologia, UML, wireframes, testes, laudo de qualidade, informações sobre hospedagem e roteiro da apresentação.
+
+## Melhorias futuras
+
+Algumas funcionalidades poderiam ser adicionadas em uma versão futura, como:
+
+* login para administrador;
+* pagamento online;
+* notificações sobre o pedido;
+* integração com serviços de entrega;
+* testes mais completos.
+
+
+
+## Considerações finais
+
+O projeto foi desenvolvido como uma aplicação acadêmica para colocar em prática os conhecimentos trabalhados na PIT I e na PIT II.
+
+A proposta foi utilizar tecnologias simples e desenvolver as principais funções necessárias para uma pequena loja de cupcakes realizar seus pedidos pela internet.
 
 ---
 
-Projeto de cunho acadêmico, desenvolvido para a disciplina PIT II de Engenharia de Software.
+**Projeto:** Cupcake Gourmet — PIT II
+**Curso:** Engenharia de Software
+**Disciplina:** Projeto Integrador Transdisciplinar II
+
