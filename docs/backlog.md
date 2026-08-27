@@ -1,82 +1,130 @@
 # Backlog do Produto - Cupcake Gourmet
 
+Este documento apresenta as principais tarefas realizadas durante o desenvolvimento do sistema Cupcake Gourmet.
+
+O backlog foi utilizado para organizar o desenvolvimento do projeto e acompanhar o que já foi realizado e o que ainda precisa ser feito.
+
 ## Product Backlog
 
-Lista das tarefas planejadas e o status de cada uma:
-
 | ID | Tarefa | Prioridade | Sprint | Status |
-|----|--------|------------|--------|--------|
-| PB-01 | Criar estrutura de pastas do projeto | Alta | 1 | Concluído |
-| PB-02 | Criar CSS com identidade visual de cupcakes | Alta | 1 | Concluído |
-| PB-03 | Criar página inicial (index.html) | Alta | 1 | Concluído |
-| PB-04 | Criar página de produtos (produtos.html) | Alta | 1 | Concluído |
-| PB-05 | Configurar Flask e criar API de produtos | Alta | 2 | Concluído |
-| PB-06 | Criar tabelas SQLite (products, orders, order_items) | Alta | 2 | Concluído |
-| PB-07 | Inserir 6 produtos iniciais no banco | Alta | 2 | Concluído |
-| PB-08 | Implementar JS para carregar produtos via API | Alta | 1 | Concluído |
-| PB-09 | Criar página do carrinho (carrinho.html) | Alta | 2 | Concluído |
-| PB-10 | Implementar carrinho no localStorage (add/remove/qtd) | Alta | 2 | Concluído |
-| PB-11 | Calcular subtotal e total em tempo real | Alta | 2 | Concluído |
-| PB-12 | Criar página de finalização (finalizar.html) | Alta | 2 | Concluído |
-| PB-13 | Implementar validações do formulário de pedido | Alta | 2 | Concluído |
-| PB-14 | Criar endpoint POST /api/orders para salvar pedido | Alta | 2 | Concluído |
-| PB-15 | Criar página de acompanhamento (acompanhar.html) | Média | 3 | Concluído |
-| PB-16 | Implementar consulta por número do pedido | Média | 3 | Concluído |
-| PB-17 | Implementar visualizador de status (stepper) | Média | 3 | Concluído |
-| PB-18 | Criar área administrativa (admin.html) | Média | 3 | Concluído |
-| PB-19 | CRUD de produtos na área admin | Média | 3 | Concluído |
-| PB-20 | Listar e ver detalhes de pedidos na admin | Média | 3 | Concluído |
-| PB-21 | Alterar status do pedido na admin | Média | 3 | Concluído |
-| PB-22 | Ajustar responsividade para celular/tablet | Alta | 4 | Concluído |
-| PB-23 | Melhorar mensagens de erro para o usuário | Alta | 4 | Concluído |
-| PB-24 | Criar testes automatizados básicos da API | Média | 4 | Concluído |
-| PB-25 | Escrever documentação (requisitos, histórias, backlog...) | Média | 4 | Concluído |
-| PB-26 | Desenhar diagramas UML (casos de uso e classes) | Média | 4 | Concluído |
-| PB-27 | Criar wireframes das telas principais | Média | 4 | Concluído |
-| PB-28 | Preparar estrutura para 5 testes com colegas | Média | 4 | Concluído |
-| PB-29 | Preparar laudo de qualidade (template vazio) | Média | 4 | Concluído |
-| PB-30 | Criar pasta de evidências | Média | 4 | Concluído |
-| PB-31 | Documentar sugestões de deploy/hospedagem | Baixa | 4 | Concluído |
-| PB-32 | Preparar roteiro do vídeo de apresentação | Baixa | 4 | Concluído |
-| PB-33 | Escrever README do repositório | Alta | 4 | Concluído |
+|---|---|---|---|---|
+| PB-01 | Criar estrutura inicial do projeto | Alta | 1 | Concluído |
+| PB-02 | Criar identidade visual com HTML e CSS | Alta | 1 | Concluído |
+| PB-03 | Criar página inicial | Alta | 1 | Concluído |
+| PB-04 | Criar página de produtos | Alta | 1 | Concluído |
+| PB-05 | Configurar Flask | Alta | 2 | Concluído |
+| PB-06 | Criar banco SQLite | Alta | 2 | Concluído |
+| PB-07 | Cadastrar produtos iniciais | Alta | 2 | Concluído |
+| PB-08 | Fazer produtos aparecerem no site | Alta | 1 | Concluído |
+| PB-09 | Criar carrinho | Alta | 2 | Concluído |
+| PB-10 | Adicionar e remover produtos do carrinho | Alta | 2 | Concluído |
+| PB-11 | Calcular o total do carrinho | Alta | 2 | Concluído |
+| PB-12 | Criar página de finalização | Alta | 2 | Concluído |
+| PB-13 | Validar formulário do pedido | Alta | 2 | Concluído |
+| PB-14 | Salvar pedidos no banco | Alta | 2 | Concluído |
+| PB-15 | Criar página de acompanhamento | Média | 3 | Concluído |
+| PB-16 | Consultar pedido pelo número | Média | 3 | Concluído |
+| PB-17 | Mostrar status do pedido | Média | 3 | Concluído |
+| PB-18 | Criar área administrativa | Média | 3 | Concluído |
+| PB-19 | Cadastrar, editar e excluir produtos | Média | 3 | Concluído |
+| PB-20 | Visualizar pedidos no administrador | Média | 3 | Concluído |
+| PB-21 | Alterar status dos pedidos | Média | 3 | Concluído |
+| PB-22 | Ajustar o site para celular | Alta | 4 | Concluído |
+| PB-23 | Melhorar mensagens de erro | Média | 4 | Concluído |
+| PB-24 | Criar testes básicos da API | Média | 4 | Concluído |
+| PB-25 | Criar documentação do projeto | Média | 4 | Concluído |
+| PB-26 | Criar diagramas UML | Média | 4 | Concluído |
+| PB-27 | Criar wireframes | Média | 4 | Concluído |
+| PB-28 | Preparar testes com colegas | Alta | 4 | Concluído |
+| PB-29 | Preparar laudo de qualidade | Alta | 4 | Concluído |
+| PB-30 | Criar pasta para evidências | Média | 4 | Concluído |
+| PB-31 | Documentar hospedagem | Baixa | 4 | Concluído |
+| PB-32 | Preparar roteiro do vídeo | Média | 4 | Concluído |
+| PB-33 | Criar README | Média | 4 | Concluído |
 | PB-34 | Criar requirements.txt e .gitignore | Alta | 4 | Concluído |
-| PB-35 | Testar manualmente e corrigir bugs | Alta | 4 | Concluído |
-| PB-36 | Adicionar busca simples por nome nos produtos | Média | 4 | Concluído |
-| PB-37 | Adicionar campo "Observação" no pedido | Média | 4 | Concluído |
-| PB-38 | Realizar 5 testes com colegas | Alta | 4 | Pendente |
-| PB-39 | Registrar problemas no laudo e corrigir | Alta | 4 | Pendente |
-| PB-40 | Gravar vídeo final de apresentação | Alta | 4 | Pendente |
-
----
+| PB-35 | Adicionar busca por nome | Média | 4 | Concluído |
+| PB-36 | Adicionar observação ao pedido | Média | 4 | Concluído |
+| PB-37 | Realizar testes com 5 colegas | Alta | 4 | Pendente |
+| PB-38 | Registrar problemas e fazer correções | Alta | 4 | Pendente |
+| PB-39 | Gravar vídeo final | Alta | 4 | Pendente |
 
 ## Sprints
 
-O projeto foi organizado em 4 ciclos curtos (Sprints) de aproximadamente 1 semana cada, para organizar o desenvolvimento individual:
+### Sprint 1 — Interface e Produtos
 
-### Sprint 1 — Interface e Catálogo
-- Objetivo: montar a estrutura do front-end e fazer os produtos aparecerem
-- Entregas: estrutura de pastas, CSS, página inicial, página de produtos e JavaScript para carregar produtos da API
+**Objetivo:** criar a parte inicial do sistema e mostrar os produtos.
+
+Principais atividades:
+
+- criar estrutura do projeto;
+- criar páginas HTML;
+- criar o CSS;
+- criar página inicial;
+- criar página de produtos;
+- carregar os produtos.
 
 ### Sprint 2 — Carrinho e Pedidos
-- Objetivo: permitir que o cliente monte o carrinho e finalize a compra
-- Entregas: carrinho no localStorage, página de carrinho, página de finalização, Flask API de pedidos e tabelas do SQLite
+
+**Objetivo:** permitir que o cliente monte o carrinho e faça um pedido.
+
+Principais atividades:
+
+- criar carrinho;
+- adicionar e remover produtos;
+- calcular total;
+- criar formulário;
+- criar banco SQLite;
+- criar API Flask;
+- salvar pedidos.
 
 ### Sprint 3 — Acompanhamento e Administração
-- Objetivo: permitir consulta de status e gerenciamento da loja
-- Entregas: página de acompanhamento com stepper, área administrativa com CRUD de produtos e gestão de pedidos/status
 
-### Sprint 4 — Testes, Correções e Documentação
-- Objetivo: finalizar detalhes e entregar tudo documentado
-- Entregas: responsividade, tratamento de erros, busca simples, observação no pedido, testes básicos, documentação em `docs/`, README, requirements e .gitignore
+**Objetivo:** permitir consultar pedidos e administrar os produtos.
 
----
+Principais atividades:
 
-## Sobre a Organização (Scrum Adaptado)
+- criar acompanhamento;
+- consultar pedidos;
+- mostrar status;
+- criar área administrativa;
+- cadastrar, editar e excluir produtos;
+- visualizar pedidos;
+- alterar status.
 
-Como o projeto foi feito por apenas uma pessoa (estudante), o Scrum foi usado de forma simplificada:
-- Não há Product Owner, Scrum Master ou equipe fictícios — sou eu mesmo organizando as tarefas.
-- O backlog acima serviu como lista do que precisa ser feito, com prioridade.
-- As Sprints foram ciclos de 1 semana para entregar partes funcionantes do sistema.
-- No final de cada Sprint, eu revisava o que funcionou e o que precisava ser ajustado antes da próxima etapa.
+### Sprint 4 — Testes e Finalização
 
-Essa adaptação foi suficiente para organizar o trabalho sem complicações.
+**Objetivo:** finalizar o sistema e preparar a entrega.
+
+Principais atividades:
+
+- ajustar responsividade;
+- melhorar mensagens;
+- adicionar busca;
+- adicionar observação no pedido;
+- realizar testes;
+- corrigir problemas;
+- finalizar documentação;
+- preparar apresentação.
+
+## Organização do Scrum
+
+Como o projeto foi desenvolvido individualmente, o Scrum foi utilizado de maneira simples para organizar as tarefas.
+
+O backlog foi utilizado como uma lista das atividades do projeto e as Sprints foram utilizadas para dividir o desenvolvimento em etapas menores.
+
+Ao final de cada etapa, o projeto era revisado para verificar o que já estava funcionando e o que ainda precisava ser feito.
+
+Não foram criados integrantes fictícios para a equipe, já que o desenvolvimento foi realizado individualmente.
+
+## Situação atual
+
+As principais funcionalidades do sistema já foram desenvolvidas.
+
+Ainda estão pendentes:
+
+- realização dos testes com cinco colegas;
+- registro dos problemas encontrados;
+- correção dos problemas identificados;
+- gravação do vídeo final.
+
+Essas etapas serão realizadas após a conclusão dos testes da aplicação.
