@@ -16,7 +16,7 @@
             <ul class="nav-links">
                 <li><a href="index.html">Início</a></li>
                 <li><a href="produtos.html">Produtos</a></li>
-                <li><a href="carrinho.html">Carrinho <span class="cart-count" id="cartCount">0</span></a></li>
+                <li><a href="carrinho.html">Carrinho <span class="cont-carrinho" id="contCarrinho">0</span></a></li>
                 <li><a href="acompanhar.html">Acompanhar</a></li>
                 <li><a href="admin.html">Admin</a></li>
             </ul>
@@ -24,67 +24,65 @@
     </header>
 
     <main>
-        <section class="section">
+        <section class="secao">
             <h2>Finalizar Pedido</h2>
 
-            <div id="successContainer" class="hidden">
-                <div class="success-message">
+            <div id="sucessoContainer" class="escondido">
+                <div class="msg-sucesso">
                     <h3>🎉 Pedido realizado com sucesso!</h3>
                     <p>Seu pedido foi confirmado. Anote o número do pedido:</p>
-                    <div class="order-number" id="orderNumber">0</div>
-                    <p style="margin-top: 0.5rem;">Você pode acompanhar o status do seu pedido a qualquer momento.</p>
+                    <div class="numero-pedido" id="numPedido">0</div>
+                    <p style="margin-top: 0.5rem;">Você pode acompanhar o status do seu pedido.</p>
                 </div>
                 <div style="text-align: center; margin-top: 1.5rem;">
                     <a href="acompanhar.html" class="btn">Acompanhar Pedido</a>
-                    <a href="produtos.html" class="btn btn-secondary" style="margin-left: 0.5rem;">Continuar Comprando</a>
+                    <a href="produtos.html" class="btn btn-secundario" style="margin-left: 0.5rem;">Continuar Comprando</a>
                 </div>
             </div>
 
             <div id="formContainer">
-                <div class="form-container">
+                <div class="formulario">
                     <h3 style="margin-bottom: 1.5rem; color: #c44569;">Resumo do Pedido</h3>
-                    <div id="orderSummary" style="margin-bottom: 2rem;">
-                        <div class="summary-row total" style="border: none; padding: 0;">
-                            <span>Total</span>
-                            <span id="totalSummary">R$ 0,00</span>
-                        </div>
+                    <div class="linha-resumo total" style="border: none; padding: 0; margin-bottom: 2rem;">
+                        <span>Total</span>
+                        <span id="totalResumo">R$ 0,00</span>
                     </div>
 
-                    <div id="errorMsg" class="error-message hidden"></div>
+                    <div id="erroMsg" class="msg-erro escondido"></div>
 
-                    <form id="orderForm">
+                    <form id="formPedido">
                         <h3 style="margin-bottom: 1rem; color: #c44569;">Dados do Cliente</h3>
-                        <div class="form-group">
+                        <div class="campo">
                             <label for="customer_name">Nome Completo *</label>
                             <input type="text" id="customer_name" required placeholder="Digite seu nome completo">
                         </div>
-                        <div class="form-group">
+                        <div class="campo">
                             <label for="phone">Telefone *</label>
-                            <input type="tel" id="phone" required placeholder="(00) 00000-0000" pattern="\([0-9]{2}\)\s[0-9]{5}-[0-9]{4}">
+                            <input type="tel" id="phone" required placeholder="(00) 00000-0000">
                         </div>
 
                         <h3 style="margin: 1.5rem 0 1rem; color: #c44569;">Endereço de Entrega</h3>
-                        <div class="form-group">
-                            <label for="address">Endereço (Rua, Avenida, etc.) *</label>
-                            <input type="text" id="address" required placeholder="Digite o endereço">
+                        <div class="campo">
+                            <label for="address">Endereço *</label>
+                            <input type="text" id="address" required placeholder="Rua, Avenida, etc.">
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
+                        <div class="linha-2">
+                            <div class="campo">
                                 <label for="number">Número *</label>
                                 <input type="text" id="number" required placeholder="Número">
                             </div>
-                            <div class="form-group">
+                            <div class="campo">
                                 <label for="neighborhood">Bairro *</label>
                                 <input type="text" id="neighborhood" required placeholder="Bairro">
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="campo">
                             <label for="complement">Complemento</label>
                             <input type="text" id="complement" placeholder="Apto, bloco, referência (opcional)">
                         </div>
 
                         <h3 style="margin: 1.5rem 0 1rem; color: #c44569;">Forma de Pagamento *</h3>
-                        <div class="form-group">
+                        <div class="campo">
                             <select id="payment_method" required>
                                 <option value="">Selecione uma forma de pagamento</option>
                                 <option value="Pix">Pix</option>
@@ -94,7 +92,7 @@
                         </div>
 
                         <div style="margin-top: 2rem;">
-                            <button type="submit" class="btn btn-success" style="width: 100%;">Confirmar Pedido</button>
+                            <button type="submit" class="btn btn-sucesso" style="width: 100%;">Confirmar Pedido</button>
                         </div>
                     </form>
                 </div>

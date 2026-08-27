@@ -1,130 +1,95 @@
 # Roteiro do Vídeo de Apresentação - Cupcake Gourmet
 
-> Preparado para aproximadamente **5 minutos**.
-> Pontos de fala organizados em ordem de exibição.
-> O vídeo NÃO será gerado aqui — este é apenas o roteiro textual.
+Vídeo estimado em ~5 minutos. Fale naturalmente, como se estivesse explicando para um colega ou professor.
 
 ---
 
-## ⏱️ Duração Total Estimada: ~5 minutos
+## Parte 1 — Introdução (~30 segundos)
+
+Tela inicial do site aberta.
+
+> "Olá! Meu nome é [SEU NOME] e esta é a apresentação do **Cupcake Gourmet**, o projeto que desenvolvi para a PIT II do curso de Engenharia de Software."
+
+> "Na PIT I eu planejei todo o sistema — requisitos, histórias de usuário, backlog, diagramas. Agora na PIT II eu implementei tudo funcionando."
 
 ---
 
-### 🎬 Parte 1: Abertura e Situação-Problema (~30 segundos)
+## Parte 2 — Tecnologias (~30 segundos)
 
-**Cena:** Tela inicial do projeto, apresentador cumprimenta.
+Mostre o README ou a estrutura de pastas.
 
-> "Olá! Meu nome é [SEU NOME] e esta é a apresentação do projeto **Cupcake Gourmet**, desenvolvido para a PIT II do curso de Engenharia de Software."
+> "Para o desenvolvimento eu utilizei tecnologias simples que aprendi na faculdade:
+> - No front-end: **HTML5, CSS3 e JavaScript puro** — sem nenhum framework como React ou Vue."
+> - No back-end: **Python com Flask** para criar a API."
+> - No banco: **SQLite** — um banco em arquivo, sem precisar instalar servidor."
 
-> "A situação-problema: uma loja de cupcakes gourmet teve uma experiência ruim com um sistema anterior mal planejado — processos de pedido confusos, dados perdidos, experiência ruim para o cliente e para o dono."
-
-> "O objetivo da PIT I foi planejar. O da PIT II é **construir e documentar** um sistema funcional que resolva esses problemas."
-
----
-
-### 🎬 Parte 2: Objetivo e Tecnologias (~30 segundos)
-
-**Cena:** Mostrar o README ou um slide de apresentação.
-
-> "Nosso objetivo foi criar uma aplicação **simples, funcional e organizada** para venda de cupcakes gourmet online, cobrindo do pedido ao acompanhamento."
-
-> "As tecnologias escolhidas foram propositalmente enxutas:
-> - **Frontend:** HTML5, CSS3 e JavaScript **puro** (sem React, sem frameworks)
-> - **Backend:** Python com o microframework **Flask**
-> - **Banco de Dados:** **SQLite** em arquivo (leve e sem servidor)
-> - Comunicação via **Fetch API** com endpoints REST JSON."
-
-> "Nada de exagero: só o necessário para um projeto acadêmico realista."
+> "A comunicação entre eles é feita com **fetch API** e JSON."
 
 ---
 
-### 🎬 Parte 3: Página Inicial e Catálogo (~40 segundos)
+## Parte 3 — Cliente: Visualizando Produtos e Montando o Carrinho (~1 minuto)
 
-**Cena:** Navegador aberto na página `index.html`. Navegar até produtos.
+Abra `index.html` no navegador, navegue até produtos.
 
-> "A página inicial apresenta a loja, um banner e os cupcakes em destaque. Vamos clicar em **Ver Produtos**."
+> "Essa é a página inicial, com um destaque de produtos. Vou clicar em **Produtos** para ver o catálogo completo."
 
-> "Aqui temos o catálogo carregado **dinamicamente via API**: cada card mostra imagem, nome, descrição, categoria e preço. São seis produtos fictícios iniciais: Chocolate, Morango, Red Velvet, Baunilha, Nutella e Limão."
-
-> "Vou adicionar **dois Cupcakes de Chocolate** e **um Red Velvet** ao carrinho."
+> "Aqui são carregados 6 cupcakes fictícios via API. Cada um tem imagem, nome, descrição, categoria e preço. Vou adicionar **2 cupcakes de chocolate** e **1 Red Velvet** ao carrinho."
 
 ---
 
-### 🎬 Parte 4: Carrinho e Criação do Pedido (~60 segundos)
+## Parte 4 — Carrinho e Finalização do Pedido (~1 minuto)
 
-**Cena:** Página do `carrinho.html`, depois `finalizar.html`.
+Vá para o carrinho, depois finalize.
 
-> "Abrindo o carrinho, vemos os itens adicionados. Consigo **aumentar/diminuir** quantidade e também **remover** itens. O subtotal e o total são recalculados automaticamente."
+> "Abrindo o carrinho, aparecem os itens que adicionei. Consigo mudar a quantidade com os botões + e -, e também remover itens. O total é calculado automaticamente."
 
-> "Agora vou **finalizar o pedido**: preencho nome, telefone, endereço, número, bairro, escolho a forma de pagamento — **Pix**, Dinheiro ou Cartão — e confirmo."
+> "Agora vou clicar em **Finalizar Pedido**. Preencho nome, telefone, endereço, número, bairro, escolho a forma de pagamento — neste caso **Dinheiro** — e confirmo."
 
-> "Aqui acontece o envio via **POST para a API Flask**, que salva tudo no banco SQLite: primeiro o pedido (tabela `orders`), depois cada item individual (tabela `order_items`)."
-
-> "Pronto! Pedido finalizado com sucesso. Recebemos o **número #1** do pedido — esse número é a referência do cliente." *(anotar # na tela)*
+> "Pronto! O pedido foi salvo no banco com sucesso e me retornou o **número 1**. Vou anotar esse número para consultar depois."
 
 ---
 
-### 🎬 Parte 5: Pedido Salvo no Banco e Acompanhamento (~45 segundos)
+## Parte 5 — Consultando o Status do Pedido (~30 segundos)
 
-**Cena:** Mostrar banco (opcional), depois página `acompanhar.html`.
+Abra `acompanhar.html`.
 
-> "Vamos provar que foi salvo no banco: acessamos a página de acompanhamento e pesquisamos pelo número do pedido."
+> "Agora vou para a tela de **Acompanhar** para pesquisar pelo número do pedido que acabei de criar."
 
-> "Traz todos os dados: cliente, total, pagamento, data/hora. E o principal: o **rastreador de status** com 4 etapas:
-> 1. Pedido recebido
-> 2. Em preparação
-> 3. Saiu para entrega
-> 4. Entregue"
-
-> "No momento ele está na etapa 1, porque acabou de ser criado. Vamos para a área administrativa mudar isso."
+> "Ele me mostra os dados do pedido: cliente, total, pagamento, data e o status visual com 4 etapas. No momento ele está como **Pedido recebido**. Vou para a área admin para mudar o status."
 
 ---
 
-### 🎬 Parte 6: Área Administrativa e Alteração de Status (~50 segundos)
+## Parte 6 — Área Administrativa (~1 minuto)
 
-**Cena:** Página `admin.html`. Mostrar abas Produtos e Pedidos.
+Abra `admin.html`.
 
-> "A área administrativa tem duas abas. Primeiro: **Produtos** — consigo cadastrar, editar e excluir qualquer cupcake. Funcionalidade para manter o catálogo atualizado."
+> "A área administrativa tem duas abas: **Produtos** e **Pedidos**."
 
-> "Agora a aba **Pedidos**: lista todos os pedidos com cliente, total, pagamento e status. Vou **ver os detalhes** do pedido #1 para confirmar tudo."
+> "Na aba Produtos, eu consigo **cadastrar, editar e excluir** qualquer cupcake. Serve para manter o catálogo atualizado."
 
-> "Confirmado. Agora vou **alterar o status** — primeiro para *Em preparação* (2), depois para *Saiu para entrega* (3), e depois para *Entregue* (4)."
+> "Na aba Pedidos, aparecem todos os pedidos. Vou clicar em **Status** no pedido #1 e alterar para **Em preparação (2)**, depois para **Saiu para entrega (3)** e por fim **Entregue (4)**."
 
-> "Volto na página de acompanhamento e **atualizo a consulta** do mesmo pedido. Agora o status aparece como 'Entregue' com todas as etapas concluídas. Funciona em tempo real lendo do SQLite."
-
----
-
-### 🎬 Parte 7: Testes, Correções e Qualidade (~25 segundos)
-
-**Cena:** Mostrar arquivos na pasta docs/testes.md e laudo-qualidade.md + script de testes.
-
-> "Para qualidade, fizemos **10 testes automatizados da API** cobrindo carregar produtos, CRUD, criar pedido, consultar e alterar status — todos passando."
-
-> "Também preparamos a estrutura para **5 testes com colegas** e o laudo de qualidade — ambos com campos em branco para preenchermos após os testes reais com usuários."
-
-> "Todo erro retorna mensagens amigáveis: 'Produto não encontrado', 'Carrinho vazio', 'Não foi possível carregar produtos' — nada de tela branca ou erro técnico."
+> "Agora se eu voltar na tela de acompanhamento e pesquisar novamente, o status aparece como concluído."
 
 ---
 
-### 🎬 Parte 8: Conclusão e Encerramento (~20 segundos)
+## Parte 7 — Testes e Conclusão (~30 segundos)
 
-**Cena:** Tela de agradecimento + volta à página inicial.
+Mostre a pasta `docs/` e o arquivo de testes.
 
-> "Concluindo: entregamos um sistema **simples, funcional, 100% acadêmico e coerente com a PIT I**. Frontend em HTML/CSS/JS puro, backend Flask, banco SQLite, documentação completa, testes e responsividade."
+> "Para qualidade, eu implementei **4 testes automatizados básicos** da API: listar produtos, criar pedido, consultar pedido e alterar status. Todos passando."
 
-> "Funcionalidades futuras (que não implementamos agora): pagamento real, autenticação de usuários, notificações por WhatsApp/e-mail, integração com motoboy, testes mais completos e integração contínua."
+> "Também preparei a estrutura para **5 testes com colegas** e o laudo de qualidade — ambos serão preenchidos após os testes reais."
 
-> "Muito obrigado pela atenção! Fico à disposição para perguntas."
+> "Concluindo: o sistema está funcionando como foi planejado na PIT I, utilizando tecnologias simples e adequadas para um projeto acadêmico. Obrigado pela atenção!"
 
 ---
 
-## 📋 Checklist de Gravação
+## Checklist antes de gravar
 
-- [ ] Microfone testado e com áudio limpo
-- [ ] Tela gravada em 1080p ou superior
-- [ ] Navegador em tela cheia durante demonstração
-- [ ] Servidor Flask iniciado ANTES da gravação
-- [ ] Dados de teste pré-preparados (não gravar enquanto digita devagar)
-- [ ] Cortar momentos de silêncio ou erros
-- [ ] Inserir legendas se possível
-- [ ] Duração final: entre 4min30s e 5min30s
+- [ ] Microfone funcionando
+- [ ] Backend Flask já iniciado ANTES de gravar
+- [ ] Dados de teste já preparados (não precisa gravar enquanto digita devagar)
+- [ ] Navegador em tela cheia
+- [ ] Duração entre 4min30s e 5min30s
+- [ ] Se possível, adicionar legendas

@@ -16,7 +16,7 @@
             <ul class="nav-links">
                 <li><a href="index.html">Início</a></li>
                 <li><a href="produtos.html">Produtos</a></li>
-                <li><a href="carrinho.html" class="active">Carrinho <span class="cart-count" id="cartCount">0</span></a></li>
+                <li><a href="carrinho.html" class="active">Carrinho <span class="cont-carrinho" id="contCarrinho">0</span></a></li>
                 <li><a href="acompanhar.html">Acompanhar</a></li>
                 <li><a href="admin.html">Admin</a></li>
             </ul>
@@ -24,30 +24,30 @@
     </header>
 
     <main>
-        <section class="section">
+        <section class="secao">
             <h2>Seu Carrinho</h2>
-            <div class="cart-container" id="cartContainer">
-                <div class="empty-cart" id="emptyCart">
-                    <div class="empty-cart-icon">🛒</div>
+            <div class="carrinho">
+                <div class="carrinho-vazio" id="vazio">
+                    <div class="icone">🛒</div>
                     <h3>Seu carrinho está vazio</h3>
                     <p style="margin: 1rem 0;">Adicione alguns cupcakes deliciosos!</p>
                     <a href="produtos.html" class="btn">Ver Produtos</a>
                 </div>
-                <div id="cartContent" class="hidden">
-                    <div id="cartItems"></div>
-                    <div class="cart-summary">
-                        <div class="summary-row">
+                <div id="conteudo" class="escondido">
+                    <div id="itens"></div>
+                    <div class="resumo">
+                        <div class="linha-resumo">
                             <span>Subtotal</span>
                             <span id="subtotal">R$ 0,00</span>
                         </div>
-                        <div class="summary-row total">
+                        <div class="linha-resumo total">
                             <span>Total</span>
                             <span id="total">R$ 0,00</span>
                         </div>
                     </div>
-                    <div class="cart-actions">
-                        <a href="produtos.html" class="btn btn-secondary">Continuar Comprando</a>
-                        <a href="finalizar.html" class="btn btn-success">Finalizar Pedido</a>
+                    <div class="carrinho-acoes">
+                        <a href="produtos.html" class="btn btn-secundario">Continuar Comprando</a>
+                        <a href="finalizar.html" class="btn btn-sucesso">Finalizar Pedido</a>
                     </div>
                 </div>
             </div>

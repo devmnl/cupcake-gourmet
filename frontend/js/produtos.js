@@ -1,73 +1,80 @@
-const API_URL = 'http://localhost:5000/api';
+const API = 'http://localhost:5000/api';
 
-function formatCurrency(value) {
-    return 'R$ ' + parseFloat(value).toFixed(2).replace('.', ',');
+function moeda(v) {
+    return 'R$ ' + parseFloat(v).toFixed(2).replace('.', ',');
 }
 
-function updateCartCount() {
-    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const total = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const countEl = document.getElementById('cartCount');
-    if (countEl) countEl.textContent = total;
+function atualizarContCarrinho() {
+    const carrinho = JSON.parse(localStorage.getItem('carrinho') || '[]');
+    const total = carrinho.reduce((s, i) => s + i.quantity, 0);
+    const el = document.getElementById('contCarrinho');
+    if (el) el.textContent = total;
 }
 
-async function getProductById(productId) {
-    try {
-        const response = await fetch(`${API_URL}/products/${productId}`);
-        if (!response.ok) return null;
-        return await response.json();
-    } catch (e) {
-        return null;
-    }
-}
-
-function addToCart(productId) {
-    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const existing = cart.find(item => item.product_id === productId);
-    if (existing) {
-        existing.quantity += 1;
+function adicionarCarrinho(idProduto) {
+    let carrinho = JSON.parse(localStorage.getItem('carrinho') || '[]');
+    const jaExiste = carrinho.find(i => i.product_id === idProduto);
+    if (jaExiste) {
+        jaExiste.quantity += 1;
     } else {
-        cart.push({ product_id: productId, quantity: 1 });
+        carrinho.push({ product_id: idProduto, quantity: 1 });
     }
-    localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartCount();
-    alert('Produto adicionado ao carrinho!');
+    localStorage.setItem('carrinho', JSON.stringify(carrinho));
+    atualizarContCarrinho();
+    alert('Produto adicionado!');
 }
 
-async function loadProducts() {
-    const grid = document.getElementById('productsGrid');
+async function carregarProdutos() {
+    const grid = document.getElementById('produtosGrid');
     if (!grid) return;
-
     try {
-        const response = await fetch(`${API_URL}/products`);
-        if (!response.ok) {
-            throw new Error('Erro na resposta da API');
-        }
-        const products = await response.json();
-
-        if (products.length === 0) {
+        const resp = await fetch(API + '/products');
+        const produtos = await resp.json();
+        if (produtos.length === 0) {
             grid.innerHTML = '<p style="text-align:center; grid-column:1/-1; color:#8b7355;">Nenhum produto cadastrado.</p>';
             return;
         }
-
-        grid.innerHTML = products.map(p => `
-            <div class="product-card">
-                <img src="${p.image}" alt="${p.name}" class="product-image" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22%3E%3Crect fill=%22%23ffeef2%22 width=%22200%22 height=%22200%22/%3E%3Ctext x=%22100%22 y=%22110%22 text-anchor=%22middle%22 font-size=%2260%22%3E🧁%3C/text%3E%3C/svg%3E'">
-                <div class="product-info">
-                    <span class="product-category">${p.category}</span>
-                    <h4 class="product-name">${p.name}</h4>
-                    <p class="product-description">${p.description}</p>
-                    <p class="product-price">${formatCurrency(p.price)}</p>
-                    <button class="btn btn-sm" onclick="addToCart(${p.id})">Adicionar ao carrinho</button>
+        grid.innerHTML = produtos.map(p => `
+            <div class="produto-card">
+                <img src="${p.image}" alt="${p.name}" class="produto-img">
+                <div class="produto-info">
+                    <span class="produto-categoria">${p.category}</span>
+                    <div class="produto-nome">${p.name}</div>
+                    <p class="produto-desc">${p.description}</p>
+                    <div class="produto-preco">${moeda(p.price)}</div>
+                    <button class="btn btn-pequeno" onclick="adicionarCarrinho(${p.id})">Adicionar ao carrinho</button>
                 </div>
             </div>
         `).join('');
     } catch (e) {
-        grid.innerHTML = '<p style="text-align:center; grid-column:1/-1; color:#c53030;">Não foi possível carregar os produtos. Verifique se o servidor está rodando.</p>';
+        grid.innerHTML = '<p style="text-align:center; grid-column:1/-1; color:#c53030;">Nao foi possivel carregar os produtos. O servidor esta rodando?</p>';
+    }
+}
+
+async function carregarDestaques() {
+    const div = document.getElementById('destaques');
+    if (!div) return;
+    try {
+        const resp = await fetch(API + '/products');
+        const produtos = (await resp.json()).slice(0, 3);
+        div.innerHTML = produtos.map(p => `
+            <div class="produto-card">
+                <img src="${p.image}" class="produto-img" alt="${p.name}">
+                <div class="produto-info">
+                    <span class="produto-categoria">${p.category}</span>
+                    <div class="produto-nome">${p.name}</div>
+                    <div class="produto-preco">${moeda(p.price)}</div>
+                    <button class="btn btn-pequeno" onclick="adicionarCarrinho(${p.id})">Adicionar</button>
+                </div>
+            </div>
+        `).join('');
+    } catch (e) {
+        div.innerHTML = '<p style="color:#c53030; grid-column:1/-1; text-align:center;">Erro ao carregar destaques.</p>';
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    updateCartCount();
-    loadProducts();
+    atualizarContCarrinho();
+    carregarProdutos();
+    carregarDestaques();
 });

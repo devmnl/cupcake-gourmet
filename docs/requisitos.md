@@ -23,20 +23,19 @@
 | ID | Descrição | Prioridade |
 |----|-----------|------------|
 | RNF01 | Interface responsiva (desktop, tablet, celular) | Alta |
-| RNF02 | Navegação simples e intuitiva entre páginas | Alta |
-| RNF03 | Mensagens de erro claras e compreensíveis | Alta |
-| RNF04 | Pedidos armazenados permanentemente em banco SQLite | Alta |
-| RNF05 | Compatibilidade com navegadores modernos (Chrome, Firefox, Edge, Safari) | Média |
-| RNF06 | Carrinho armazenado no localStorage do navegador | Média |
-| RNF07 | Comunicação via API REST JSON | Alta |
-| RNF08 | Tempo de resposta da API < 2 segundos | Média |
+| RNF02 | Navegação simples entre as páginas | Alta |
+| RNF03 | Mensagens de erro fáceis de entender | Alta |
+| RNF04 | Pedidos salvos permanentemente no SQLite | Alta |
+| RNF05 | Funcionar em navegadores modernos (Chrome, Firefox, Edge) | Média |
+| RNF06 | Carrinho salvo no localStorage do navegador | Média |
+| RNF07 | Comunicação entre front e back-end por API REST JSON | Alta |
 
 ## 3. Regras de Negócio
 
-- RN01: O carrinho deve ter pelo menos 1 item para finalizar o pedido.
-- RN02: O total do pedido é calculado multiplicando preço unitário por quantidade de cada item.
-- RN03: O status do pedido segue a ordem: 1-Recebido → 2-Preparação → 3-Entrega → 4-Entregue.
-- RN04: Preços de produtos devem ser valores positivos maiores que zero.
-- RN05: Quantidades no carrinho devem ser valores inteiros maiores que zero.
-- RN06: Todos os campos obrigatórios do formulário devem ser preenchidos.
-- RN07: Telefone deve conter 11 dígitos (DDD + número).
+- O carrinho precisa ter pelo menos 1 item para finalizar o pedido.
+- O total é preço unitário × quantidade de cada item, somando todos.
+- Status segue a ordem: 1-Recebido → 2-Preparação → 3-Saiu para entrega → 4-Entregue.
+- Preços dos produtos são sempre valores positivos.
+- Quantidades no carrinho são sempre números inteiros positivos.
+- Campos obrigatórios do formulário de finalização precisam ser preenchidos.
+- Telefone precisa ter 11 dígitos (DDD + número).

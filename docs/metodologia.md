@@ -1,116 +1,69 @@
 # Metodologia - Cupcake Gourmet
 
-## 1. Metodologia de Desenvolvimento
+## 1. Como o Projeto Foi Desenvolvido
 
-### Scrum (Adaptado para Projeto Individual Acadêmico)
+Este projeto foi desenvolvido individualmente por um estudante de Engenharia de Software, como parte da disciplina PIT II.
 
-O desenvolvimento do sistema **Cupcake Gourmet** seguiu a metodologia ágil **Scrum**, adaptada para um projeto individual conforme utilizado na PIT I. A escolha do Scrum se justifica pela necessidade de entregas incrementais, organização do backlog e ciclos curtos de desenvolvimento (Sprints), alinhados ao cronograma acadêmico.
+Para organizar o trabalho, eu utilizei o **Scrum de forma adaptada para projeto individual** — sem papéis fictícios como Product Owner ou Scrum Master, e sem equipe. A ideia foi só pegar emprestados alguns conceitos úteis do Scrum:
 
-### Pilares do Scrum Aplicados
-- **Transparência:** Todo o progresso é registrado no backlog do produto, com status e sprint de cada tarefa.
-- **Inspeção:** Revisão ao final de cada sprint para validar o incremento e identificar ajustes.
-- **Adaptação:** Ajustes no backlog e na estratégia conforme dificuldades encontradas.
+- **Backlog:** Uma lista com todas as tarefas que precisavam ser feitas, organizadas por prioridade.
+- **Sprints:** Dividi o trabalho em 4 ciclos curtos de aproximadamente 1 semana cada.
+- **Revisão:** No fim de cada Sprint, eu testava o que foi feito e ajustava o que precisava.
+
+Essa abordagem serviu para não deixar tudo para a última semana e garantir que o projeto fosse avançando aos poucos.
 
 ---
 
-## 2. Papéis (Projeto Individual)
+## 2. Ferramentas e Tecnologias
 
-Em um projeto individual, os três papéis do Scrum são acumulados:
+| Categoria | Tecnologia | Uso no Projeto |
+|-----------|------------|----------------|
+| Front-end | HTML5 | Estrutura das páginas |
+| Front-end | CSS3 | Estilos visuais e responsividade |
+| Front-end | JavaScript (puro) | Interações, carrinho em `localStorage` e requisições `fetch()` |
+| Back-end | Python 3 | Lógica do sistema e API |
+| Back-end | Flask | Criação da API REST |
+| Banco | SQLite 3 | Armazenar produtos, pedidos e itens (arquivo sem servidor) |
+| Comunicação | Fetch API + JSON | Troca de dados entre o navegador e a API Flask |
+| Testes | Script Python (`urllib.request`) | Testes básicos dos endpoints da API |
+| Versionamento | Git + .gitignore | Controle de versão e preparação para GitHub |
 
-| Papel | Responsabilidade no Projeto |
-|-------|------------------------------|
-| **Product Owner (PO)** | Define as funcionalidades conforme os requisitos da PIT II, prioriza o backlog de acordo com importância acadêmica e valor para o cliente fictício. |
-| **Scrum Master (SM)** | Auto-organização do cronograma, identificação e remoção de impedimentos (ex: dificuldade com CORS, dúvidas em SQL), garantia do cumprimento das Sprints. |
-| **Development Team (Dev)** | Implementação técnica completa: modelagem do banco, API Flask, frontend HTML/CSS/JS, testes e documentação. |
+*Não foram usados frameworks de front-end (React, Vue, Angular), TypeScript, Node.js, Bootstrap ou Tailwind — propositalmente, para manter o projeto simples e focado no básico da web.*
 
 ---
 
 ## 3. Ciclo de Vida: 4 Sprints
 
-O projeto foi organizado em **4 Sprints** de aproximadamente 1 semana cada, alinhados com o ciclo de entrega da disciplina:
-
-| Sprint | Período Estimado | Objetivo Principal | Entregas Chave |
-|--------|------------------|--------------------|----------------|
-| **Sprint 1** | Semana 1 | Interface e Catálogo | Estrutura de pastas, CSS identidade visual, página inicial, página de produtos com consumo da API (GET). |
-| **Sprint 2** | Semana 2 | Carrinho e Pedidos | Carrinho com localStorage, página de finalização, Flask API de pedidos (POST), SQLite salvando orders e order_items. |
-| **Sprint 3** | Semana 3 | Banco e Administração | CRUD completo de produtos, página de acompanhamento com tracker de status, área administrativa (listar pedidos, detalhes, alterar status). |
-| **Sprint 4** | Semana 4 | Testes, Correções e Documentação | Responsividade mobile/tablet, tratamento de erros, testes automatizados, toda documentação acadêmica em `docs/`, README, `.gitignore`, `requirements.txt`. |
-
-### Eventos Scrum (Equivalente Individual)
-
-| Evento Scrum | Como foi adaptado |
-|--------------|-------------------|
-| **Sprint Planning** | No início de cada Sprint: selecionar os itens do backlog, definir meta da Sprint. |
-| **Daily Scrum** | Check diário auto-aplicado: O que fiz ontem? O que farei hoje? Quais impedimentos? (registrado em anotações pessoais) |
-| **Sprint Review** | Ao final de cada Sprint: testar o incremento, validar funcionalidades, registrar o que está pronto vs. o que precisa de ajuste. |
-| **Sprint Retrospective** | Lições aprendidas por Sprint: o que deu certo? o que pode melhorar na próxima? (ex: na Sprint 1 aprendi a organizar melhor os endpoints antes de codar). |
+| Sprint | Duração Estimada | Foco |
+|--------|------------------|------|
+| **Sprint 1** | 1 semana | Estrutura do projeto, CSS, páginas inicial e de produtos |
+| **Sprint 2** | 1 semana | Carrinho, finalização de pedido e criação da API + banco |
+| **Sprint 3** | 1 semana | Acompanhamento de pedido e área administrativa |
+| **Sprint 4** | 1 semana | Responsividade, correções, testes e documentação |
 
 ---
 
-## 4. Ferramentas Utilizadas
+## 4. Processo Simples Para Cada Funcionalidade
 
-| Categoria | Ferramenta | Finalidade |
-|-----------|------------|------------|
-| **Linguagem Front** | HTML5, CSS3, JavaScript (puro - ES6+) | Interface, estilos e interações do usuário. |
-| **Linguagem Back** | Python 3 | Lógica de negócio e API. |
-| **Framework Web** | Flask | API REST leve para endpoints. |
-| **Banco de Dados** | SQLite 3 | Persistência relacional (em arquivo). |
-| **CORS** | Flask-CORS | Permitir requisições do frontend separado. |
-| **Armazenamento Local** | localStorage API (Browser) | Carrinho temporário do cliente. |
-| **IDE / Editor** | Editor de código-fonte com suporte a HTML/CSS/JS/Python | Codificação. |
-| **Navegador** | Navegador moderno (Chrome/Edge/Firefox) | Testes de interface. |
-| **Versionamento** | Git + .gitignore | Controle de versões (preparado para GitHub). |
-| **Testes** | Script Python com urllib.request | Testes automatizados dos endpoints. |
-| **Comunicação** | Fetch API (JS) | Comunicação assíncrona JS ↔ Flask. |
+Cada vez que eu implementava uma nova funcionalidade, seguia este roteiro básico:
+
+1. **Ler o requisito / história de usuário** para entender exatamente o que precisava funcionar.
+2. **Planejar o que mexer:** front-end só? back-end só? ou os dois?
+3. **Implementar o back-end primeiro** (quando aplicável): endpoint Flask + SQL no banco.
+4. **Depois implementar o front-end:** HTML (estrutura), CSS (visual) e JavaScript (interação / fetch).
+5. **Testar manualmente no navegador:** testar o caminho feliz e também casos de erro (ex: carrinho vazio, campos em branco no formulário).
+6. **Corrigir o que não funcionava direito.**
+7. **Marcar a tarefa como concluída no backlog.**
 
 ---
 
-## 5. Processo de Desenvolvimento por Funcionalidade
+## 5. Relação com a PIT I
 
-Cada funcionalidade seguiu este ciclo simplificado:
+Este projeto é a continuação direta da PIT I. Na PIT I eu fiz apenas o planejamento:
+- Levantei requisitos funcionais e não funcionais
+- Escrevi as histórias de usuário
+- Criei o backlog com as 4 Sprints
+- Desenhei wireframes simples e diagramas UML iniciais
+- Planejei usar Scrum adaptado para desenvolvimento individual
 
-```
-1. ANÁLISE
-   └─ Ler requisito / história de usuário
-   └─ Identificar o que precisa ser feito (frontend / backend / ambos)
-
-2. PROJETO SIMPLES
-   └─ Definir estrutura da tela OU estrutura do endpoint
-   └─ Definir campos e validações
-
-3. IMPLEMENTAÇÃO
-   └─ Codificar backend (API + SQL)
-   └─ Codificar frontend (HTML + CSS + JS fetch)
-
-4. VALIDAÇÃO
-   └─ Testar manualmente no navegador
-   └─ Testar caso de erro (ex: carrinho vazio, produto inexistente)
-   └─ Registrar correções se houver
-
-5. INTEGRAÇÃO
-   └─ Garantir que funcionalidade nova não quebrou funcionalidades anteriores
-```
-
----
-
-## 6. Critérios de Pronto (Definition of Done)
-
-Uma tarefa só é considerada **Concluída** quando:
-
-- [x] Código implementado e sintaticamente correto;
-- [x] Funciona no navegador desktop e responsivo (celular);
-- [x] Comunicação com API funcionando (quando aplicável);
-- [x] Dados sendo salvos/lidos corretamente no SQLite;
-- [x] Mensagens de erro amigáveis para casos de falha;
-- [x] Validado contra a história de usuário e critérios de aceitação;
-- [x] Registrado no backlog como ✅ Concluído.
-
----
-
-## 7. Alinhamento com a PIT I
-
-Esta metodologia dá **continuidade direta** à PIT I:
-- Mantém Scrum como framework.
-- Mantém histórias de usuário e backlog como artefatos centrais.
-- Evolui da fase de *planejamento e prototipação* (PIT I) para *implementação, validação e documentação* (PIT II).
-- Requisitos funcionais e não funcionais da PIT I foram a base direta do Product Backlog.
+Já na PIT II, o objetivo foi tirar esse planejamento do papel e construir o sistema de fato funcionando, além de documentar todas as etapas.

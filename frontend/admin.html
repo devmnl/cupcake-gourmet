@@ -16,7 +16,7 @@
             <ul class="nav-links">
                 <li><a href="index.html">Início</a></li>
                 <li><a href="produtos.html">Produtos</a></li>
-                <li><a href="carrinho.html">Carrinho <span class="cart-count" id="cartCount">0</span></a></li>
+                <li><a href="carrinho.html">Carrinho <span class="cont-carrinho" id="contCarrinho">0</span></a></li>
                 <li><a href="acompanhar.html">Acompanhar</a></li>
                 <li><a href="admin.html" class="active">Admin</a></li>
             </ul>
@@ -24,18 +24,18 @@
     </header>
 
     <main>
-        <section class="section">
+        <section class="secao">
             <h2>Painel Administrativo</h2>
 
-            <div class="admin-tabs">
-                <button class="admin-tab active" onclick="switchTab('products')">Produtos</button>
-                <button class="admin-tab" onclick="switchTab('orders')">Pedidos</button>
+            <div class="admin-abas">
+                <button class="admin-aba ativa" onclick="trocarAba('produtos')">Produtos</button>
+                <button class="admin-aba" onclick="trocarAba('pedidos')">Pedidos</button>
             </div>
 
-            <div id="tabProducts" class="admin-panel">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <div id="abaProdutos" class="admin-painel">
+                <div class="admin-painel-cabecalho">
                     <h3>Gerenciar Produtos</h3>
-                    <button class="btn btn-sm" onclick="openProductModal()">+ Cadastrar Produto</button>
+                    <button class="btn btn-pequeno" onclick="abrirModalProduto()">+ Cadastrar Produto</button>
                 </div>
                 <div style="overflow-x: auto;">
                     <table>
@@ -49,14 +49,14 @@
                                 <th>Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="productsTable">
+                        <tbody id="tbProdutos">
                             <tr><td colspan="6" style="text-align: center; padding: 2rem; color: #8b7355;">Carregando produtos...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <div id="tabOrders" class="admin-panel hidden">
+            <div id="abaPedidos" class="admin-painel escondido">
                 <h3 style="margin-bottom: 1.5rem;">Gerenciar Pedidos</h3>
                 <div style="overflow-x: auto;">
                     <table>
@@ -71,7 +71,7 @@
                                 <th>Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="ordersTable">
+                        <tbody id="tbPedidos">
                             <tr><td colspan="7" style="text-align: center; padding: 2rem; color: #8b7355;">Carregando pedidos...</td></tr>
                         </tbody>
                     </table>
@@ -80,51 +80,51 @@
         </section>
     </main>
 
-    <div class="modal" id="productModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle">Cadastrar Produto</h3>
-                <button class="modal-close" onclick="closeProductModal()">&times;</button>
+    <div class="modal" id="modalProduto">
+        <div class="modal-conteudo">
+            <div class="modal-cabecalho">
+                <h3 id="modalTitulo">Cadastrar Produto</h3>
+                <button class="modal-fechar" onclick="fecharModalProduto()">&times;</button>
             </div>
-            <form id="productForm">
-                <input type="hidden" id="productId">
-                <div class="form-group">
-                    <label for="p_name">Nome do Produto *</label>
-                    <input type="text" id="p_name" required placeholder="Ex: Cupcake de Chocolate">
+            <form id="formProduto">
+                <input type="hidden" id="pId">
+                <div class="campo">
+                    <label for="pNome">Nome do Produto *</label>
+                    <input type="text" id="pNome" required placeholder="Ex: Cupcake de Chocolate">
                 </div>
-                <div class="form-group">
-                    <label for="p_description">Descrição *</label>
-                    <textarea id="p_description" required rows="3" placeholder="Descreva o produto"></textarea>
+                <div class="campo">
+                    <label for="pDesc">Descrição *</label>
+                    <textarea id="pDesc" required rows="3" placeholder="Descreva o produto"></textarea>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="p_price">Preço (R$) *</label>
-                        <input type="number" id="p_price" required step="0.01" min="0.01" placeholder="0.00">
+                <div class="linha-2">
+                    <div class="campo">
+                        <label for="pPreco">Preço (R$) *</label>
+                        <input type="number" id="pPreco" required step="0.01" min="0.01" placeholder="0.00">
                     </div>
-                    <div class="form-group">
-                        <label for="p_category">Categoria *</label>
-                        <input type="text" id="p_category" required placeholder="Ex: Chocolate">
+                    <div class="campo">
+                        <label for="pCat">Categoria *</label>
+                        <input type="text" id="pCat" required placeholder="Ex: Chocolate">
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="p_image">URL da Imagem *</label>
-                    <input type="url" id="p_image" required placeholder="https://...">
+                <div class="campo">
+                    <label for="pImg">URL da Imagem *</label>
+                    <input type="url" id="pImg" required placeholder="https://...">
                 </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancelar</button>
-                    <button type="submit" class="btn btn-success" id="modalSubmitBtn">Salvar</button>
+                <div class="modal-acoes">
+                    <button type="button" class="btn btn-secundario" onclick="fecharModalProduto()">Cancelar</button>
+                    <button type="submit" class="btn btn-sucesso" id="modalSubmit">Salvar</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div class="modal" id="orderModal">
-        <div class="modal-content">
-            <div class="modal-header">
+    <div class="modal" id="modalPedido">
+        <div class="modal-conteudo">
+            <div class="modal-cabecalho">
                 <h3>Detalhes do Pedido</h3>
-                <button class="modal-close" onclick="closeOrderModal()">&times;</button>
+                <button class="modal-fechar" onclick="fecharModalPedido()">&times;</button>
             </div>
-            <div id="orderModalContent"></div>
+            <div id="modalConteudoPedido"></div>
         </div>
     </div>
 

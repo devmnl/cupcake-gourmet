@@ -1,234 +1,252 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import database
+import sqlite3
+import os
 
 app = Flask(__name__)
 CORS(app)
 
-database.create_tables()
-database.seed_products()
+DB_PATH = os.path.join(os.path.dirname(__file__), 'cupcake.db')
 
-STATUS_MESSAGES = {
+STATUS = {
     1: 'Pedido recebido',
-    2: 'Em preparação',
+    2: 'Em preparacao',
     3: 'Saiu para entrega',
     4: 'Entregue'
 }
 
 
+def conectar():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def criar_banco():
+    conn = conectar()
+    c = conn.cursor()
+
+    c.execute('''CREATE TABLE IF NOT EXISTS products (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        description TEXT NOT NULL,
+        price REAL NOT NULL,
+        category TEXT NOT NULL,
+        image TEXT NOT NULL
+    )''')
+
+    c.execute('''CREATE TABLE IF NOT EXISTS orders (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        customer_name TEXT NOT NULL,
+        phone TEXT NOT NULL,
+        address TEXT NOT NULL,
+        number TEXT NOT NULL,
+        complement TEXT,
+        neighborhood TEXT NOT NULL,
+        payment_method TEXT NOT NULL,
+        total REAL NOT NULL,
+        status INTEGER NOT NULL DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )''')
+
+    c.execute('''CREATE TABLE IF NOT EXISTS order_items (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        order_id INTEGER NOT NULL,
+        product_id INTEGER NOT NULL,
+        quantity INTEGER NOT NULL,
+        price REAL NOT NULL,
+        FOREIGN KEY (order_id) REFERENCES orders (id),
+        FOREIGN KEY (product_id) REFERENCES products (id)
+    )''')
+
+    c.execute('SELECT COUNT(*) FROM products')
+    if c.fetchone()[0] == 0:
+        produtos_iniciais = [
+            ('Cupcake de Chocolate', 'Cupcake de chocolate com recheio e cobertura.', 8.50, 'Chocolate', 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=chocolate%20cupcake%20frosting&image_size=square_hd'),
+            ('Cupcake de Morango', 'Cupcake de baunilha com morango fresco.', 9.00, 'Frutas', 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=strawberry%20cupcake%20cream&image_size=square_hd'),
+            ('Cupcake Red Velvet', 'Cupcake red velvet com cream cheese.', 10.00, 'Especiais', 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=red%20velvet%20cupcake&image_size=square_hd'),
+            ('Cupcake de Baunilha', 'Cupcake classico de baunilha.', 7.50, 'Classicos', 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=vanilla%20cupcake%20frosting&image_size=square_hd'),
+            ('Cupcake de Nutella', 'Cupcake com recheio de Nutella.', 11.00, 'Especiais', 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=nutella%20cupcake&image_size=square_hd'),
+            ('Cupcake de Limao', 'Cupcake de limao siciliano.', 8.00, 'Frutas', 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=lemon%20cupcake&image_size=square_hd')
+        ]
+        c.executemany(
+            'INSERT INTO products (name, description, price, category, image) VALUES (?, ?, ?, ?, ?)',
+            produtos_iniciais
+        )
+
+    conn.commit()
+    conn.close()
+
+
+criar_banco()
+
+
 @app.route('/api/products', methods=['GET'])
-def get_products():
+def listar_produtos():
     try:
-        conn = database.get_connection()
-        cursor = conn.cursor()
-        cursor.execute('SELECT * FROM products')
-        products = cursor.fetchall()
+        conn = conectar()
+        produtos = conn.execute('SELECT * FROM products').fetchall()
         conn.close()
-        return jsonify([dict(p) for p in products])
+        return jsonify([dict(p) for p in produtos])
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/api/products/<int:product_id>', methods=['GET'])
-def get_product(product_id):
+@app.route('/api/products/<int:id>', methods=['GET'])
+def buscar_produto(id):
     try:
-        conn = database.get_connection()
-        cursor = conn.cursor()
-        cursor.execute('SELECT * FROM products WHERE id = ?', (product_id,))
-        product = cursor.fetchone()
+        conn = conectar()
+        p = conn.execute('SELECT * FROM products WHERE id = ?', (id,)).fetchone()
         conn.close()
-        if product is None:
-            return jsonify({'error': 'Produto não encontrado'}), 404
-        return jsonify(dict(product))
+        if not p:
+            return jsonify({'error': 'Produto nao encontrado'}), 404
+        return jsonify(dict(p))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 
 @app.route('/api/products', methods=['POST'])
-def create_product():
+def criar_produto():
     try:
-        data = request.get_json()
-        if not all(k in data for k in ('name', 'description', 'price', 'category', 'image')):
-            return jsonify({'error': 'Campos obrigatórios faltando'}), 400
-        if data['price'] <= 0:
-            return jsonify({'error': 'Preço deve ser maior que zero'}), 400
-
-        conn = database.get_connection()
-        cursor = conn.cursor()
-        cursor.execute(
+        d = request.get_json()
+        if not d.get('name') or not d.get('description') or not d.get('price') or not d.get('category') or not d.get('image'):
+            return jsonify({'error': 'Preencha todos os campos'}), 400
+        if d['price'] <= 0:
+            return jsonify({'error': 'Preco invalido'}), 400
+        conn = conectar()
+        c = conn.cursor()
+        c.execute(
             'INSERT INTO products (name, description, price, category, image) VALUES (?, ?, ?, ?, ?)',
-            (data['name'], data['description'], data['price'], data['category'], data['image'])
+            (d['name'], d['description'], d['price'], d['category'], d['image'])
         )
         conn.commit()
-        product_id = cursor.lastrowid
+        novo_id = c.lastrowid
         conn.close()
-
-        return jsonify({'id': product_id, 'message': 'Produto cadastrado com sucesso'}), 201
+        return jsonify({'id': novo_id, 'message': 'Produto cadastrado'}), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/api/products/<int:product_id>', methods=['PUT'])
-def update_product(product_id):
+@app.route('/api/products/<int:id>', methods=['PUT'])
+def atualizar_produto(id):
     try:
-        data = request.get_json()
-        if not all(k in data for k in ('name', 'description', 'price', 'category', 'image')):
-            return jsonify({'error': 'Campos obrigatórios faltando'}), 400
-        if data['price'] <= 0:
-            return jsonify({'error': 'Preço deve ser maior que zero'}), 400
-
-        conn = database.get_connection()
-        cursor = conn.cursor()
-        cursor.execute('SELECT id FROM products WHERE id = ?', (product_id,))
-        if cursor.fetchone() is None:
+        d = request.get_json()
+        conn = conectar()
+        existe = conn.execute('SELECT id FROM products WHERE id = ?', (id,)).fetchone()
+        if not existe:
             conn.close()
-            return jsonify({'error': 'Produto não encontrado'}), 404
-
-        cursor.execute(
-            'UPDATE products SET name = ?, description = ?, price = ?, category = ?, image = ? WHERE id = ?',
-            (data['name'], data['description'], data['price'], data['category'], data['image'], product_id)
+            return jsonify({'error': 'Produto nao encontrado'}), 404
+        conn.execute(
+            'UPDATE products SET name=?, description=?, price=?, category=?, image=? WHERE id=?',
+            (d['name'], d['description'], d['price'], d['category'], d['image'], id)
         )
         conn.commit()
         conn.close()
-
-        return jsonify({'message': 'Produto atualizado com sucesso'})
+        return jsonify({'message': 'Produto atualizado'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/api/products/<int:product_id>', methods=['DELETE'])
-def delete_product(product_id):
+@app.route('/api/products/<int:id>', methods=['DELETE'])
+def deletar_produto(id):
     try:
-        conn = database.get_connection()
-        cursor = conn.cursor()
-        cursor.execute('SELECT id FROM products WHERE id = ?', (product_id,))
-        if cursor.fetchone() is None:
+        conn = conectar()
+        existe = conn.execute('SELECT id FROM products WHERE id = ?', (id,)).fetchone()
+        if not existe:
             conn.close()
-            return jsonify({'error': 'Produto não encontrado'}), 404
-
-        cursor.execute('DELETE FROM products WHERE id = ?', (product_id,))
+            return jsonify({'error': 'Produto nao encontrado'}), 404
+        conn.execute('DELETE FROM products WHERE id = ?', (id,))
         conn.commit()
         conn.close()
-
-        return jsonify({'message': 'Produto excluído com sucesso'})
+        return jsonify({'message': 'Produto excluido'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 
 @app.route('/api/orders', methods=['GET'])
-def get_orders():
+def listar_pedidos():
     try:
-        conn = database.get_connection()
-        cursor = conn.cursor()
-        cursor.execute('SELECT * FROM orders ORDER BY created_at DESC')
-        orders = cursor.fetchall()
-        result = []
-        for order in orders:
-            order_dict = dict(order)
-            order_dict['status_text'] = STATUS_MESSAGES.get(order_dict['status'], 'Desconhecido')
-            result.append(order_dict)
+        conn = conectar()
+        pedidos = conn.execute('SELECT * FROM orders ORDER BY created_at DESC').fetchall()
+        resultado = []
+        for p in pedidos:
+            pd = dict(p)
+            pd['status_text'] = STATUS.get(pd['status'], 'Desconhecido')
+            resultado.append(pd)
         conn.close()
-        return jsonify(result)
+        return jsonify(resultado)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/api/orders/<int:order_id>', methods=['GET'])
-def get_order(order_id):
+@app.route('/api/orders/<int:id>', methods=['GET'])
+def buscar_pedido(id):
     try:
-        conn = database.get_connection()
-        cursor = conn.cursor()
-        cursor.execute('SELECT * FROM orders WHERE id = ?', (order_id,))
-        order = cursor.fetchone()
-        if order is None:
+        conn = conectar()
+        pedido = conn.execute('SELECT * FROM orders WHERE id = ?', (id,)).fetchone()
+        if not pedido:
             conn.close()
-            return jsonify({'error': 'Pedido não encontrado'}), 404
-
-        order_dict = dict(order)
-        order_dict['status_text'] = STATUS_MESSAGES.get(order_dict['status'], 'Desconhecido')
-
-        cursor.execute('''
-            SELECT oi.*, p.name, p.image
-            FROM order_items oi
+            return jsonify({'error': 'Pedido nao encontrado'}), 404
+        pd = dict(pedido)
+        pd['status_text'] = STATUS.get(pd['status'], 'Desconhecido')
+        itens = conn.execute('''
+            SELECT oi.*, p.name FROM order_items oi
             JOIN products p ON oi.product_id = p.id
             WHERE oi.order_id = ?
-        ''', (order_id,))
-        items = cursor.fetchall()
-        order_dict['items'] = [dict(i) for i in items]
+        ''', (id,)).fetchall()
+        pd['items'] = [dict(i) for i in itens]
         conn.close()
-
-        return jsonify(order_dict)
+        return jsonify(pd)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 
 @app.route('/api/orders', methods=['POST'])
-def create_order():
+def criar_pedido():
     try:
-        data = request.get_json()
-        required = ['customer_name', 'phone', 'address', 'number', 'neighborhood', 'payment_method', 'total', 'items']
-        if not all(k in data for k in required):
-            return jsonify({'error': 'Campos obrigatórios faltando'}), 400
-        if len(data['items']) == 0:
+        d = request.get_json()
+        if not d.get('customer_name') or not d.get('phone') or not d.get('address') or not d.get('number') or not d.get('neighborhood') or not d.get('payment_method') or not d.get('total') or not d.get('items'):
+            return jsonify({'error': 'Preencha todos os campos'}), 400
+        if len(d['items']) == 0:
             return jsonify({'error': 'Carrinho vazio'}), 400
-        if data['total'] <= 0:
-            return jsonify({'error': 'Total inválido'}), 400
 
-        conn = database.get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute(
+        conn = conectar()
+        c = conn.cursor()
+        c.execute(
             '''INSERT INTO orders (customer_name, phone, address, number, complement, neighborhood, payment_method, total, status)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)''',
-            (
-                data['customer_name'],
-                data['phone'],
-                data['address'],
-                data['number'],
-                data.get('complement', ''),
-                data['neighborhood'],
-                data['payment_method'],
-                data['total']
-            )
+            (d['customer_name'], d['phone'], d['address'], d['number'],
+             d.get('complement', ''), d['neighborhood'], d['payment_method'], d['total'])
         )
-        order_id = cursor.lastrowid
-
-        for item in data['items']:
-            cursor.execute(
+        pedido_id = c.lastrowid
+        for item in d['items']:
+            c.execute(
                 'INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)',
-                (order_id, item['product_id'], item['quantity'], item['price'])
+                (pedido_id, item['product_id'], item['quantity'], item['price'])
             )
-
         conn.commit()
         conn.close()
-
-        return jsonify({'id': order_id, 'message': 'Pedido criado com sucesso'}), 201
+        return jsonify({'id': pedido_id, 'message': 'Pedido criado'}), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/api/orders/<int:order_id>/status', methods=['PUT'])
-def update_order_status(order_id):
+@app.route('/api/orders/<int:id>/status', methods=['PUT'])
+def atualizar_status(id):
     try:
-        data = request.get_json()
-        if 'status' not in data:
-            return jsonify({'error': 'Status é obrigatório'}), 400
-        new_status = data['status']
-        if new_status not in (1, 2, 3, 4):
-            return jsonify({'error': 'Status inválido'}), 400
-
-        conn = database.get_connection()
-        cursor = conn.cursor()
-        cursor.execute('SELECT id FROM orders WHERE id = ?', (order_id,))
-        if cursor.fetchone() is None:
+        d = request.get_json()
+        novo = d.get('status')
+        if novo not in (1, 2, 3, 4):
+            return jsonify({'error': 'Status invalido'}), 400
+        conn = conectar()
+        existe = conn.execute('SELECT id FROM orders WHERE id = ?', (id,)).fetchone()
+        if not existe:
             conn.close()
-            return jsonify({'error': 'Pedido não encontrado'}), 404
-
-        cursor.execute('UPDATE orders SET status = ? WHERE id = ?', (new_status, order_id))
+            return jsonify({'error': 'Pedido nao encontrado'}), 404
+        conn.execute('UPDATE orders SET status = ? WHERE id = ?', (novo, id))
         conn.commit()
         conn.close()
-
-        return jsonify({'message': 'Status atualizado com sucesso'})
+        return jsonify({'message': 'Status atualizado'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

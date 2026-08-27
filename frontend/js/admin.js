@@ -1,319 +1,201 @@
-const API_URL_ADMIN = 'http://localhost:5000/api';
+const API_ADM = 'http://localhost:5000/api';
 
-const STATUS_OPTIONS = [
-    { value: 1, label: 'Pedido recebido' },
-    { value: 2, label: 'Em preparação' },
-    { value: 3, label: 'Saiu para entrega' },
-    { value: 4, label: 'Entregue' }
-];
+function moeda(v) { return 'R$ ' + parseFloat(v).toFixed(2).replace('.', ','); }
 
-function formatCurrency(value) {
-    return 'R$ ' + parseFloat(value).toFixed(2).replace('.', ',');
+function atualizarCont() {
+    const c = JSON.parse(localStorage.getItem('carrinho') || '[]');
+    const el = document.getElementById('contCarrinho');
+    if (el) el.textContent = c.reduce((s, i) => s + i.quantity, 0);
 }
 
-function updateCartCount() {
-    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const total = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const countEl = document.getElementById('cartCount');
-    if (countEl) countEl.textContent = total;
-}
-
-function switchTab(tab) {
-    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-    event.target.classList.add('active');
-
-    document.getElementById('tabProducts').classList.add('hidden');
-    document.getElementById('tabOrders').classList.add('hidden');
-
-    if (tab === 'products') {
-        document.getElementById('tabProducts').classList.remove('hidden');
-        loadProductsAdmin();
+function trocarAba(aba) {
+    document.querySelectorAll('.admin-aba').forEach(b => b.classList.remove('ativa'));
+    event.target.classList.add('ativa');
+    document.getElementById('abaProdutos').classList.add('escondido');
+    document.getElementById('abaPedidos').classList.add('escondido');
+    if (aba === 'produtos') {
+        document.getElementById('abaProdutos').classList.remove('escondido');
+        carregarProdutos();
     } else {
-        document.getElementById('tabOrders').classList.remove('hidden');
-        loadOrdersAdmin();
+        document.getElementById('abaPedidos').classList.remove('escondido');
+        carregarPedidos();
     }
 }
 
-async function loadProductsAdmin() {
-    const tbody = document.getElementById('productsTable');
+async function carregarProdutos() {
+    const tb = document.getElementById('tbProdutos');
     try {
-        const res = await fetch(`${API_URL_ADMIN}/products`);
-        const products = await res.json();
-
-        if (products.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:#8b7355;">Nenhum produto cadastrado.</td></tr>';
+        const r = await fetch(API_ADM + '/products');
+        const lista = await r.json();
+        if (lista.length === 0) {
+            tb.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">Nenhum produto.</td></tr>';
             return;
         }
-
-        tbody.innerHTML = products.map(p => `
+        tb.innerHTML = lista.map(p => `
             <tr>
                 <td>${p.id}</td>
-                <td><img src="${p.image}" alt="${p.name}" style="width:50px; height:50px; border-radius:8px; object-fit:cover;" onerror="this.style.display='none'"></td>
-                <td><strong>${p.name}</strong><br><small style="color:#8b7355;">${p.description.substring(0,60)}...</small></td>
+                <td><img src="${p.image}" style="width:45px; height:45px; border-radius:5px; object-fit:cover;"></td>
+                <td><strong>${p.name}</strong><br><small style="color:#8b7355;">${p.description.slice(0, 50)}...</small></td>
                 <td>${p.category}</td>
-                <td style="font-weight:bold; color:#c44569;">${formatCurrency(p.price)}</td>
+                <td><strong style="color:#c44569;">${moeda(p.price)}</strong></td>
                 <td>
-                    <div class="table-actions">
-                        <button class="btn btn-sm" onclick="editProduct(${p.id})">Editar</button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteProduct(${p.id})">Excluir</button>
+                    <div class="tabela-acoes">
+                        <button class="btn btn-pequeno" onclick="editarProduto(${p.id})">Editar</button>
+                        <button class="btn btn-pequeno btn-perigo" onclick="excluirProduto(${p.id})">Excluir</button>
                     </div>
                 </td>
-            </tr>
-        `).join('');
+            </tr>`
+        ).join('');
     } catch (e) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#c53030;">Erro ao carregar produtos.</td></tr>';
+        tb.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#c53030;">Erro ao carregar.</td></tr>';
     }
 }
 
-async function loadOrdersAdmin() {
-    const tbody = document.getElementById('ordersTable');
+async function carregarPedidos() {
+    const tb = document.getElementById('tbPedidos');
     try {
-        const res = await fetch(`${API_URL_ADMIN}/orders`);
-        const orders = await res.json();
-
-        if (orders.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem; color:#8b7355;">Nenhum pedido cadastrado.</td></tr>';
+        const r = await fetch(API_ADM + '/orders');
+        const lista = await r.json();
+        if (lista.length === 0) {
+            tb.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">Nenhum pedido.</td></tr>';
             return;
         }
-
-        tbody.innerHTML = orders.map(o => {
-            const date = new Date(o.created_at);
-            return `
-                <tr>
-                    <td><strong>#${o.id}</strong></td>
-                    <td>${o.customer_name}</td>
-                    <td style="font-weight:bold; color:#c44569;">${formatCurrency(o.total)}</td>
-                    <td>${o.payment_method}</td>
-                    <td><span class="status-badge status-${o.status}">${o.status_text}</span></td>
-                    <td style="font-size:0.85rem;">${date.toLocaleDateString('pt-BR')} ${date.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</td>
-                    <td>
-                        <div class="table-actions">
-                            <button class="btn btn-sm" onclick="viewOrder(${o.id})">Ver</button>
-                            <button class="btn btn-sm btn-secondary" onclick="changeStatus(${o.id}, ${o.status})">Status</button>
-                        </div>
-                    </td>
-                </tr>
-            `;
+        tb.innerHTML = lista.map(o => {
+            const d = new Date(o.created_at);
+            return `<tr>
+                <td><strong>#${o.id}</strong></td>
+                <td>${o.customer_name}</td>
+                <td><strong style="color:#c44569;">${moeda(o.total)}</strong></td>
+                <td>${o.payment_method}</td>
+                <td><span class="status-tag status-${o.status}">${o.status_text}</span></td>
+                <td style="font-size:12px;">${d.toLocaleDateString('pt-BR')} ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</td>
+                <td>
+                    <div class="tabela-acoes">
+                        <button class="btn btn-pequeno" onclick="verPedido(${o.id})">Ver</button>
+                        <button class="btn btn-pequeno btn-secundario" onclick="mudarStatus(${o.id})">Status</button>
+                    </div>
+                </td>
+            </tr>`;
         }).join('');
     } catch (e) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#c53030;">Erro ao carregar pedidos.</td></tr>';
+        tb.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#c53030;">Erro ao carregar.</td></tr>';
     }
 }
 
-function openProductModal(productId = null) {
-    const modal = document.getElementById('productModal');
-    const form = document.getElementById('productForm');
-    const title = document.getElementById('modalTitle');
-    const submitBtn = document.getElementById('modalSubmitBtn');
-
-    form.reset();
-    document.getElementById('productId').value = '';
-
-    if (productId) {
-        title.textContent = 'Editar Produto';
-        submitBtn.textContent = 'Atualizar';
-        fetch(`${API_URL_ADMIN}/products/${productId}`)
-            .then(r => r.json())
-            .then(p => {
-                document.getElementById('productId').value = p.id;
-                document.getElementById('p_name').value = p.name;
-                document.getElementById('p_description').value = p.description;
-                document.getElementById('p_price').value = p.price;
-                document.getElementById('p_category').value = p.category;
-                document.getElementById('p_image').value = p.image;
-            });
-    } else {
-        title.textContent = 'Cadastrar Produto';
-        submitBtn.textContent = 'Cadastrar';
+function abrirModalProduto(id) {
+    document.getElementById('formProduto').reset();
+    document.getElementById('pId').value = '';
+    document.getElementById('modalTitulo').textContent = id ? 'Editar Produto' : 'Cadastrar Produto';
+    document.getElementById('modalSubmit').textContent = id ? 'Atualizar' : 'Cadastrar';
+    if (id) {
+        fetch(API_ADM + '/products/' + id).then(r => r.json()).then(p => {
+            document.getElementById('pId').value = p.id;
+            document.getElementById('pNome').value = p.name;
+            document.getElementById('pDesc').value = p.description;
+            document.getElementById('pPreco').value = p.price;
+            document.getElementById('pCat').value = p.category;
+            document.getElementById('pImg').value = p.image;
+        });
     }
-
-    modal.classList.add('active');
+    document.getElementById('modalProduto').classList.add('ativo');
 }
 
-function closeProductModal() {
-    document.getElementById('productModal').classList.remove('active');
-}
+function fecharModalProduto() { document.getElementById('modalProduto').classList.remove('ativo'); }
 
-function editProduct(productId) {
-    openProductModal(productId);
-}
+function editarProduto(id) { abrirModalProduto(id); }
 
-async function deleteProduct(productId) {
-    if (!confirm('Tem certeza que deseja excluir este produto?')) return;
-
+async function excluirProduto(id) {
+    if (!confirm('Excluir produto?')) return;
     try {
-        const res = await fetch(`${API_URL_ADMIN}/products/${productId}`, { method: 'DELETE' });
-        const data = await res.json();
-        if (res.ok) {
-            alert('Produto excluído com sucesso!');
-            loadProductsAdmin();
-        } else {
-            alert(data.error || 'Erro ao excluir produto.');
-        }
-    } catch (e) {
-        alert('Não foi possível excluir o produto.');
-    }
+        const r = await fetch(API_ADM + '/products/' + id, { method: 'DELETE' });
+        const d = await r.json();
+        alert(r.ok ? d.message : d.error);
+        if (r.ok) carregarProdutos();
+    } catch (e) { alert('Erro de conexao.'); }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const productForm = document.getElementById('productForm');
-    if (productForm) {
-        productForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+    const form = document.getElementById('formProduto');
+    if (form) form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('pId').value;
+        const dados = {
+            name: document.getElementById('pNome').value.trim(),
+            description: document.getElementById('pDesc').value.trim(),
+            price: parseFloat(document.getElementById('pPreco').value),
+            category: document.getElementById('pCat').value.trim(),
+            image: document.getElementById('pImg').value.trim()
+        };
+        if (!dados.name || !dados.description || !dados.price || !dados.category || !dados.image)
+            return alert('Preencha todos os campos.');
+        if (dados.price <= 0) return alert('Preco invalido.');
 
-            const id = document.getElementById('productId').value;
-            const product = {
-                name: document.getElementById('p_name').value.trim(),
-                description: document.getElementById('p_description').value.trim(),
-                price: parseFloat(document.getElementById('p_price').value),
-                category: document.getElementById('p_category').value.trim(),
-                image: document.getElementById('p_image').value.trim()
-            };
+        try {
+            const url = id ? API_ADM + '/products/' + id : API_ADM + '/products';
+            const metodo = id ? 'PUT' : 'POST';
+            const r = await fetch(url, {
+                method: metodo,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
+            });
+            const d = await r.json();
+            alert(r.ok ? d.message : d.error);
+            if (r.ok) { fecharModalProduto(); carregarProdutos(); }
+        } catch (e) { alert('Erro de conexao.'); }
+    });
 
-            if (!product.name || !product.description || !product.price || !product.category || !product.image) {
-                alert('Preencha todos os campos obrigatórios.');
-                return;
-            }
-            if (product.price <= 0) {
-                alert('Preço deve ser maior que zero.');
-                return;
-            }
-
-            try {
-                let res;
-                if (id) {
-                    res = await fetch(`${API_URL_ADMIN}/products/${id}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(product)
-                    });
-                } else {
-                    res = await fetch(`${API_URL_ADMIN}/products`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(product)
-                    });
-                }
-
-                const data = await res.json();
-                if (res.ok) {
-                    alert(data.message || 'Produto salvo com sucesso!');
-                    closeProductModal();
-                    loadProductsAdmin();
-                } else {
-                    alert(data.error || 'Erro ao salvar produto.');
-                }
-            } catch (e) {
-                alert('Não foi possível salvar o produto. Verifique a conexão.');
-            }
-        });
-    }
+    atualizarCont();
+    carregarProdutos();
 });
 
-async function viewOrder(orderId) {
+async function verPedido(id) {
     try {
-        const res = await fetch(`${API_URL_ADMIN}/orders/${orderId}`);
-        if (!res.ok) {
-            alert('Pedido não encontrado.');
-            return;
-        }
-        const order = await res.json();
-        const date = new Date(order.created_at);
-
-        let itemsHtml = order.items.map(item => `
-            <div class="detail-row">
-                <span class="detail-label">${item.quantity}x ${item.name}</span>
-                <span class="detail-value">${formatCurrency(item.price * item.quantity)}</span>
+        const r = await fetch(API_ADM + '/orders/' + id);
+        if (!r.ok) return alert('Pedido nao encontrado.');
+        const o = await r.json();
+        const d = new Date(o.created_at);
+        document.getElementById('modalConteudoPedido').innerHTML = `
+            <div class="linha-detalhe"><span class="label-detalhe">Pedido:</span> <strong>#${o.id}</strong></div>
+            <div class="linha-detalhe"><span class="label-detalhe">Cliente:</span> ${o.customer_name}</div>
+            <div class="linha-detalhe"><span class="label-detalhe">Telefone:</span> ${o.phone}</div>
+            <div class="linha-detalhe"><span class="label-detalhe">Endereco:</span> ${o.address}, ${o.number}${o.complement ? ' - ' + o.complement : ''}</div>
+            <div class="linha-detalhe"><span class="label-detalhe">Bairro:</span> ${o.neighborhood}</div>
+            <div class="linha-detalhe"><span class="label-detalhe">Pagamento:</span> ${o.payment_method}</div>
+            <div class="linha-detalhe"><span class="label-detalhe">Status:</span> <span class="status-tag status-${o.status}">${o.status_text}</span></div>
+            <div class="linha-detalhe"><span class="label-detalhe">Data:</span> ${d.toLocaleString('pt-BR')}</div>
+            <h4 style="margin-top:15px; margin-bottom:8px; color:#c44569;">Itens</h4>
+            ${o.items.map(i =>
+                `<div class="linha-detalhe">
+                    <span class="label-detalhe">${i.quantity}x ${i.name}</span>
+                    <span>${moeda(i.price * i.quantity)}</span>
+                </div>`
+            ).join('')}
+            <div class="linha-detalhe" style="border-top:2px solid #ffeef2; margin-top:10px; padding-top:10px;">
+                <span class="label-detalhe" style="font-size:16px;">TOTAL:</span>
+                <strong style="color:#c44569; font-size:16px;">${moeda(o.total)}</strong>
             </div>
-        `).join('');
-
-        document.getElementById('orderModalContent').innerHTML = `
-            <div class="detail-row">
-                <span class="detail-label">Pedido:</span>
-                <span class="detail-value"><strong>#${order.id}</strong></span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Cliente:</span>
-                <span class="detail-value">${order.customer_name}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Telefone:</span>
-                <span class="detail-value">${order.phone}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Endereço:</span>
-                <span class="detail-value">${order.address}, ${order.number}${order.complement ? ' - ' + order.complement : ''}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Bairro:</span>
-                <span class="detail-value">${order.neighborhood}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Pagamento:</span>
-                <span class="detail-value">${order.payment_method}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Status:</span>
-                <span class="detail-value"><span class="status-badge status-${order.status}">${order.status_text}</span></span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Data:</span>
-                <span class="detail-value">${date.toLocaleString('pt-BR')}</span>
-            </div>
-            <h4 style="margin-top:1.5rem; margin-bottom:0.8rem; color:#c44569;">Itens do Pedido</h4>
-            ${itemsHtml}
-            <div class="detail-row" style="border-top: 2px solid #ffeef2; margin-top:1rem; padding-top:1rem;">
-                <span class="detail-label" style="font-size:1.1rem;">TOTAL:</span>
-                <span class="detail-value" style="font-weight:bold; color:#c44569; font-size:1.1rem;">${formatCurrency(order.total)}</span>
-            </div>
-            <div style="margin-top:1.5rem; text-align:right;">
-                <button class="btn btn-secondary" onclick="closeOrderModal()">Fechar</button>
-            </div>
-        `;
-        document.getElementById('orderModal').classList.add('active');
-    } catch (e) {
-        alert('Erro ao carregar detalhes do pedido.');
-    }
+            <div style="text-align:right; margin-top:15px;">
+                <button class="btn btn-secundario" onclick="fecharModalPedido()">Fechar</button>
+            </div>`;
+        document.getElementById('modalPedido').classList.add('ativo');
+    } catch (e) { alert('Erro ao carregar pedido.'); }
 }
 
-function closeOrderModal() {
-    document.getElementById('orderModal').classList.remove('active');
-}
+function fecharModalPedido() { document.getElementById('modalPedido').classList.remove('ativo'); }
 
-async function changeStatus(orderId, currentStatus) {
-    const options = STATUS_OPTIONS.map(s =>
-        `${s.value} - ${s.label}${s.value === currentStatus ? ' (atual)' : ''}`
-    ).join('\n');
-
-    const input = prompt(`Alterar status do pedido #${orderId}:\n\n${options}\n\nDigite o número do novo status (1-4):`, currentStatus);
-
-    if (input === null) return;
-
-    const newStatus = parseInt(input);
-    if (![1, 2, 3, 4].includes(newStatus)) {
-        alert('Status inválido. Digite um número entre 1 e 4.');
-        return;
-    }
-
+async function mudarStatus(id) {
+    const s = prompt('Alterar status (1-Recebido, 2-Preparacao, 3-Entrega, 4-Entregue):\nDigite o novo numero (1-4):');
+    if (s === null) return;
+    const num = parseInt(s);
+    if (![1,2,3,4].includes(num)) return alert('Status invalido.');
     try {
-        const res = await fetch(`${API_URL_ADMIN}/orders/${orderId}/status`, {
+        const r = await fetch(API_ADM + '/orders/' + id + '/status', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: newStatus })
+            body: JSON.stringify({ status: num })
         });
-        const data = await res.json();
-        if (res.ok) {
-            alert('Status atualizado com sucesso!');
-            loadOrdersAdmin();
-        } else {
-            alert(data.error || 'Erro ao atualizar status.');
-        }
-    } catch (e) {
-        alert('Não foi possível atualizar o status.');
-    }
+        const d = await r.json();
+        alert(r.ok ? d.message : d.error);
+        if (r.ok) carregarPedidos();
+    } catch (e) { alert('Erro de conexao.'); }
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    updateCartCount();
-    loadProductsAdmin();
-});

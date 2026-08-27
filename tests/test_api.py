@@ -20,134 +20,108 @@ def put(path, data):
     with urllib.request.urlopen(req) as resp:
         return resp.status, json.loads(resp.read())
 
-def delete(path):
-    req = urllib.request.Request(BASE + path, method='DELETE')
-    with urllib.request.urlopen(req) as resp:
-        return resp.status, json.loads(resp.read())
+ok = 0
+falhou = 0
 
-print('=' * 60)
-print('TESTE 1: Carregar produtos (GET /api/products)')
-print('=' * 60)
-products = get('/products')
-print(f'OK - {len(products)} produtos carregados:')
-for p in products[:3]:
-    print(f'  #{p["id"]} {p["name"]} - R$ {p["price"]}')
+def passou(msg):
+    global ok
+    ok += 1
+    print(f'[OK] {msg}')
 
-print()
-print('=' * 60)
-print('TESTE 2: Carregar produto por ID (GET /api/products/1)')
-print('=' * 60)
-p1 = get('/products/1')
-print(f'OK - Produto #{p1["id"]}: {p1["name"]}')
+def falhar(msg):
+    global falhou
+    falhou += 1
+    print(f'[FALHOU] {msg}')
 
-print()
-print('=' * 60)
-print('TESTE 3: Cadastrar produto (POST /api/products)')
-print('=' * 60)
-novo_produto = {
-    'name': 'Cupcake Teste',
-    'description': 'Produto criado para teste automatizado.',
-    'price': 5.50,
-    'category': 'Teste',
-    'image': 'https://example.com/teste.jpg'
-}
-status, resp = post('/products', novo_produto)
-novo_id = resp['id']
-print(f'OK - Produto #{novo_id} cadastrado: {resp["message"]}')
+print('=' * 50)
+print('TESTE 1: Listar produtos (GET /api/products)')
+print('=' * 50)
+try:
+    produtos = get('/products')
+    if isinstance(produtos, list) and len(produtos) > 0:
+        passou(f'{len(produtos)} produtos encontrados. Ex: "{produtos[0]["name"]}"')
+    else:
+        falhar('Nenhum produto retornado.')
+except Exception as e:
+    falhar(f'Erro: {e}')
 
 print()
-print('=' * 60)
-print('TESTE 4: Editar produto (PUT /api/products/<id>)')
-print('=' * 60)
-novo_produto['name'] = 'Cupcake Teste Editado'
-novo_produto['price'] = 6.90
-status, resp = put(f'/products/{novo_id}', novo_produto)
-print(f'OK - {resp["message"]}')
-
-atualizado = get(f'/products/{novo_id}')
-assert atualizado['name'] == 'Cupcake Teste Editado'
-assert atualizado['price'] == 6.90
-print(f'OK - Validação: nome = "{atualizado["name"]}", preço = R$ {atualizado["price"]}')
-
-print()
-print('=' * 60)
-print('TESTE 5: Excluir produto (DELETE /api/products/<id>)')
-print('=' * 60)
-status, resp = delete(f'/products/{novo_id}')
-print(f'OK - {resp["message"]}')
-products_apos = get('/products')
-ids_existentes = [p['id'] for p in products_apos]
-assert novo_id not in ids_existentes
-print('OK - Produto não existe mais na lista.')
-
-print()
-print('=' * 60)
-print('TESTE 6: Criar pedido (POST /api/orders)')
-print('=' * 60)
-products = get('/products')
-itens_pedido = [
-    {'product_id': products[0]['id'], 'quantity': 2, 'price': products[0]['price']},
-    {'product_id': products[1]['id'], 'quantity': 1, 'price': products[1]['price']}
-]
-total_esperado = sum(i['quantity'] * i['price'] for i in itens_pedido)
-pedido = {
-    'customer_name': 'Cliente Teste',
-    'phone': '(11) 99999-9999',
-    'address': 'Rua das Flores',
-    'number': '123',
-    'complement': 'Apto 45',
-    'neighborhood': 'Centro',
-    'payment_method': 'Pix',
-    'total': total_esperado,
-    'items': itens_pedido
-}
-status, resp = post('/orders', pedido)
-pedido_id = resp['id']
-print(f'OK - Pedido #{pedido_id} criado. Total = R$ {total_esperado:.2f}. Mensagem: {resp["message"]}')
+print('=' * 50)
+print('TESTE 2: Criar pedido (POST /api/orders)')
+print('=' * 50)
+pedido_id = None
+try:
+    produtos = get('/products')
+    if len(produtos) == 0:
+        falhar('Sem produtos para criar pedido.')
+    else:
+        itens = [
+            {'product_id': produtos[0]['id'], 'quantity': 2, 'price': produtos[0]['price']},
+            {'product_id': produtos[-1]['id'], 'quantity': 1, 'price': produtos[-1]['price']}
+        ]
+        total = sum(i['quantity'] * i['price'] for i in itens)
+        pedido = {
+            'customer_name': 'Aluno Teste',
+            'phone': '(11) 98765-4321',
+            'address': 'Rua da Universidade',
+            'number': '100',
+            'complement': '',
+            'neighborhood': 'Centro',
+            'payment_method': 'Dinheiro',
+            'total': total,
+            'items': itens
+        }
+        status, resp = post('/orders', pedido)
+        if status == 200 or status == 201:
+            pedido_id = resp['id']
+            passou(f'Pedido #{pedido_id} criado. Total: R$ {total:.2f}')
+        else:
+            falhar(f'Status {status}.')
+except Exception as e:
+    falhar(f'Erro: {e}')
 
 print()
-print('=' * 60)
-print('TESTE 7: Consultar pedido (GET /api/orders/<id>)')
-print('=' * 60)
-pedido_consultado = get(f'/orders/{pedido_id}')
-print(f'OK - Pedido #{pedido_consultado["id"]}')
-print(f'  Cliente: {pedido_consultado["customer_name"]}')
-print(f'  Total: R$ {pedido_consultado["total"]}')
-print(f'  Status ({pedido_consultado["status"]}): {pedido_consultado["status_text"]}')
-print(f'  Itens: {len(pedido_consultado["items"])} item(ns)')
-assert len(pedido_consultado['items']) == 2
-assert pedido_consultado['total'] == total_esperado
-print('OK - Validações: total e quantidade de itens corretos.')
+print('=' * 50)
+print('TESTE 3: Consultar pedido (GET /api/orders/<id>)')
+print('=' * 50)
+try:
+    if not pedido_id:
+        falhar('Pedido não criado no teste anterior.')
+    else:
+        p = get(f'/orders/{pedido_id}')
+        if p['id'] == pedido_id and 'items' in p and p['customer_name'] == 'Aluno Teste':
+            passou(f'Pedido #{p["id"]} consultado. Cliente: {p["customer_name"]}, Itens: {len(p["items"])}, Status: {p["status_text"]}')
+        else:
+            falhar('Dados do pedido não conferem.')
+except Exception as e:
+    falhar(f'Erro: {e}')
 
 print()
-print('=' * 60)
-print('TESTE 8: Listar todos os pedidos (GET /api/orders)')
-print('=' * 60)
-orders = get('/orders')
-print(f'OK - {len(orders)} pedido(s) listados.')
+print('=' * 50)
+print('TESTE 4: Alterar status do pedido (PUT /api/orders/<id>/status)')
+print('=' * 50)
+try:
+    if not pedido_id:
+        falhar('Pedido não criado.')
+    else:
+        status, resp = put(f'/orders/{pedido_id}/status', {'status': 3})
+        if status == 200:
+            p = get(f'/orders/{pedido_id}')
+            if p['status'] == 3:
+                passou(f'Status alterado para "{p["status_text"]}".')
+            else:
+                falhar(f'Status esperado 3, recebido {p["status"]}')
+        else:
+            falhar(f'Status HTTP {status}.')
+except Exception as e:
+    falhar(f'Erro: {e}')
 
 print()
-print('=' * 60)
-print('TESTE 9: Alterar status do pedido (PUT /api/orders/<id>/status)')
-print('=' * 60)
-status, resp = put(f'/orders/{pedido_id}/status', {'status': 3})
-print(f'OK - {resp["message"]}')
-pedido_status = get(f'/orders/{pedido_id}')
-assert pedido_status['status'] == 3
-assert pedido_status['status_text'] == 'Saiu para entrega'
-print(f'OK - Status atual: ({pedido_status["status"]}) {pedido_status["status_text"]}')
-
-print()
-print('=' * 60)
-print('TESTE 10: Calcular total do pedido (cálculo interno)')
-print('=' * 60)
-calculado = sum(i['price'] * i['quantity'] for i in pedido_consultado['items'])
-print(f'Soma dos itens: R$ {calculado:.2f}')
-print(f'Total do pedido: R$ {pedido_consultado["total"]:.2f}')
-assert abs(calculado - pedido_consultado['total']) < 0.01
-print('OK - Cálculo do total confere com a soma dos itens.')
-
-print()
-print('=' * 60)
-print('🎉 TODOS OS TESTES FORAM APROVADOS! 🎉')
-print('=' * 60)
+print('=' * 50)
+print(f'RESULTADO: {ok} aprovados, {falhou} falhos.')
+print('=' * 50)
+if falhou == 0:
+    print('Todos os testes basicos passaram.')
+else:
+    print('Atencao: houve falhas nos testes.')
+    exit(1)

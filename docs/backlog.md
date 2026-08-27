@@ -2,87 +2,76 @@
 
 ## Product Backlog
 
-| ID | Tarefa | Prioridade | Status | Sprint |
+Lista das tarefas planejadas e o status de cada uma:
+
+| ID | Tarefa | Prioridade | Sprint | Status |
 |----|--------|------------|--------|--------|
-| PB-01 | Criar estrutura de pastas e arquivos do projeto | Alta | ✅ Concluído | 1 |
-| PB-02 | Configurar Flask e rotas da API | Alta | ✅ Concluído | 2 |
-| PB-03 | Criar banco SQLite com tabelas products, orders, order_items | Alta | ✅ Concluído | 2 |
-| PB-04 | Inserir dados fictícios de 6 cupcakes no banco | Alta | ✅ Concluído | 2 |
-| PB-05 | Desenvolver CSS com identidade visual da loja | Alta | ✅ Concluído | 1 |
-| PB-06 | Criar página inicial (index.html) | Alta | ✅ Concluído | 1 |
-| PB-07 | Criar página de produtos (produtos.html) | Alta | ✅ Concluído | 1 |
-| PB-08 | Implementar JS para carregar produtos via API | Alta | ✅ Concluído | 1 |
-| PB-09 | Criar página de carrinho (carrinho.html) | Alta | ✅ Concluído | 2 |
-| PB-10 | Implementar localStorage do carrinho (add/remove/qtd) | Alta | ✅ Concluído | 2 |
-| PB-11 | Implementar cálculo de subtotal e total | Alta | ✅ Concluído | 2 |
-| PB-12 | Criar página de finalização (finalizar.html) | Alta | ✅ Concluído | 2 |
-| PB-13 | Implementar formulário e validações | Alta | ✅ Concluído | 2 |
-| PB-14 | Criar endpoint POST /api/orders | Alta | ✅ Concluído | 2 |
-| PB-15 | Salvar pedido no SQLite com itens relacionados | Alta | ✅ Concluído | 2 |
-| PB-16 | Criar página de acompanhamento (acompanhar.html) | Média | ✅ Concluído | 3 |
-| PB-17 | Implementar consulta por número do pedido | Média | ✅ Concluído | 3 |
-| PB-18 | Implementar visualizador de status (tracker) | Média | ✅ Concluído | 3 |
-| PB-19 | Criar área administrativa (admin.html) | Média | ✅ Concluído | 3 |
-| PB-20 | Implementar CRUD de produtos (Admin) | Média | ✅ Concluído | 3 |
-| PB-21 | Implementar listagem e detalhes de pedidos (Admin) | Média | ✅ Concluído | 3 |
-| PB-22 | Implementar alteração de status (Admin) | Média | ✅ Concluído | 3 |
-| PB-23 | Ajustar responsividade para mobile/tablet | Alta | ✅ Concluído | 4 |
-| PB-24 | Implementar tratamento de erros e mensagens amigáveis | Alta | ✅ Concluído | 4 |
-| PB-25 | Criar testes automatizados da API | Média | ✅ Concluído | 4 |
-| PB-26 | Documentar requisitos | Média | ✅ Concluído | 4 |
-| PB-27 | Documentar histórias de usuário | Média | ✅ Concluído | 4 |
-| PB-28 | Documentar backlog e sprints | Média | ✅ Concluído | 4 |
-| PB-29 | Documentar UML (casos de uso e classes) | Média | ⏳ Pendente | 4 |
-| PB-30 | Documentar wireframes | Média | ⏳ Pendente | 4 |
-| PB-31 | Documentar metodologia (Scrum adaptado) | Média | ⏳ Pendente | 4 |
-| PB-32 | Preparar estrutura de testes com 5 colegas | Média | ⏳ Pendente | 4 |
-| PB-33 | Preparar laudo de qualidade (template) | Média | ⏳ Pendente | 4 |
-| PB-34 | Criar pasta de evidências com README | Média | ⏳ Pendente | 4 |
-| PB-35 | Documentar deploy/hospedagem | Baixa | ⏳ Pendente | 4 |
-| PB-36 | Preparar roteiro do vídeo | Baixa | ⏳ Pendente | 4 |
-| PB-37 | Escrever README principal do projeto | Alta | ⏳ Pendente | 4 |
-| PB-38 | Criar requirements.txt e .gitignore | Alta | ✅ Concluído | 4 |
-| PB-39 | Testes manuais e correções de bugs | Alta | ✅ Concluído | 4 |
+| PB-01 | Criar estrutura de pastas do projeto | Alta | 1 | Concluído |
+| PB-02 | Criar CSS com identidade visual de cupcakes | Alta | 1 | Concluído |
+| PB-03 | Criar página inicial (index.html) | Alta | 1 | Concluído |
+| PB-04 | Criar página de produtos (produtos.html) | Alta | 1 | Concluído |
+| PB-05 | Configurar Flask e criar API de produtos | Alta | 2 | Concluído |
+| PB-06 | Criar tabelas SQLite (products, orders, order_items) | Alta | 2 | Concluído |
+| PB-07 | Inserir 6 produtos iniciais no banco | Alta | 2 | Concluído |
+| PB-08 | Implementar JS para carregar produtos via API | Alta | 1 | Concluído |
+| PB-09 | Criar página do carrinho (carrinho.html) | Alta | 2 | Concluído |
+| PB-10 | Implementar carrinho no localStorage (add/remove/qtd) | Alta | 2 | Concluído |
+| PB-11 | Calcular subtotal e total em tempo real | Alta | 2 | Concluído |
+| PB-12 | Criar página de finalização (finalizar.html) | Alta | 2 | Concluído |
+| PB-13 | Implementar validações do formulário de pedido | Alta | 2 | Concluído |
+| PB-14 | Criar endpoint POST /api/orders para salvar pedido | Alta | 2 | Concluído |
+| PB-15 | Criar página de acompanhamento (acompanhar.html) | Média | 3 | Concluído |
+| PB-16 | Implementar consulta por número do pedido | Média | 3 | Concluído |
+| PB-17 | Implementar visualizador de status (stepper) | Média | 3 | Concluído |
+| PB-18 | Criar área administrativa (admin.html) | Média | 3 | Concluído |
+| PB-19 | CRUD de produtos na área admin | Média | 3 | Concluído |
+| PB-20 | Listar e ver detalhes de pedidos na admin | Média | 3 | Concluído |
+| PB-21 | Alterar status do pedido na admin | Média | 3 | Concluído |
+| PB-22 | Ajustar responsividade para celular/tablet | Alta | 4 | Concluído |
+| PB-23 | Melhorar mensagens de erro para o usuário | Alta | 4 | Concluído |
+| PB-24 | Criar testes automatizados básicos da API | Média | 4 | Concluído |
+| PB-25 | Escrever documentação (requisitos, histórias, backlog...) | Média | 4 | Concluído |
+| PB-26 | Desenhar diagramas UML (casos de uso e classes) | Média | 4 | Concluído |
+| PB-27 | Criar wireframes das telas principais | Média | 4 | Concluído |
+| PB-28 | Preparar estrutura para 5 testes com colegas | Média | 4 | Concluído |
+| PB-29 | Preparar laudo de qualidade (template vazio) | Média | 4 | Concluído |
+| PB-30 | Criar pasta de evidências | Média | 4 | Concluído |
+| PB-31 | Documentar sugestões de deploy/hospedagem | Baixa | 4 | Concluído |
+| PB-32 | Preparar roteiro do vídeo de apresentação | Baixa | 4 | Concluído |
+| PB-33 | Escrever README do repositório | Alta | 4 | Concluído |
+| PB-34 | Criar requirements.txt e .gitignore | Alta | 4 | Concluído |
+| PB-35 | Testar manualmente e corrigir bugs | Alta | 4 | Concluído |
 
 ---
 
-## Sprints (Metodologia Scrum adaptada para projeto individual)
+## Sprints
 
-### Sprint 1: Interface e Catálogo
-- **Objetivo:** Estruturar o frontend básico e exibir produtos
-- **Duração estimada:** 1 semana
-- **Itens entregues:** PB-01, PB-05, PB-06, PB-07, PB-08
-- **Resultado:** Páginas iniciais funcionando com produtos carregados
+O projeto foi organizado em 4 ciclos curtos (Sprints) de aproximadamente 1 semana cada, para organizar o desenvolvimento individual:
 
-### Sprint 2: Carrinho e Pedidos
-- **Objetivo:** Implementar fluxo de compra até finalização
-- **Duração estimada:** 1 semana
-- **Itens entregues:** PB-02, PB-03, PB-04, PB-09, PB-10, PB-11, PB-12, PB-13, PB-14, PB-15
-- **Resultado:** Cliente consegue montar carrinho e finalizar pedido salvo no banco
+### Sprint 1 — Interface e Catálogo
+- Objetivo: montar a estrutura do front-end e fazer os produtos aparecerem
+- Entregas: estrutura de pastas, CSS, página inicial, página de produtos e JavaScript para carregar produtos da API
 
-### Sprint 3: Banco e Administração
-- **Objetivo:** Completar área administrativa e acompanhamento
-- **Duração estimada:** 1 semana
-- **Itens entregues:** PB-16, PB-17, PB-18, PB-19, PB-20, PB-21, PB-22
-- **Resultado:** Admin gerencia produtos e pedidos; cliente consulta status
+### Sprint 2 — Carrinho e Pedidos
+- Objetivo: permitir que o cliente monte o carrinho e finalize a compra
+- Entregas: carrinho no localStorage, página de carrinho, página de finalização, Flask API de pedidos e tabelas do SQLite
 
-### Sprint 4: Testes, Correções e Documentação
-- **Objetivo:** Garantir qualidade e entregar documentação
-- **Duração estimada:** 1 semana
-- **Itens entregues:** PB-23 a PB-39
-- **Resultado:** Projeto completo, testado e documentado para apresentação
+### Sprint 3 — Acompanhamento e Administração
+- Objetivo: permitir consulta de status e gerenciamento da loja
+- Entregas: página de acompanhamento com stepper, área administrativa com CRUD de produtos e gestão de pedidos/status
+
+### Sprint 4 — Testes, Correções e Documentação
+- Objetivo: finalizar detalhes e entregar tudo documentado
+- Entregas: responsividade, tratamento de erros, testes básicos, documentação em `docs/`, README, requirements e .gitignore
 
 ---
 
-## Scrum - Papéis (Projeto Individual)
+## Sobre a Organização (Scrum Adaptado)
 
-| Papel | Responsabilidade |
-|-------|------------------|
-| **Product Owner** | Definir e priorizar backlog conforme requisitos acadêmicos |
-| **Scrum Master** | Auto-organização, remover impedimentos, seguir cronograma |
-| **Development Team** | Desenvolver, testar e documentar todas as entregas |
+Como o projeto foi feito por apenas uma pessoa (estudante), o Scrum foi usado de forma simplificada:
+- Não há Product Owner, Scrum Master ou equipe fictícios — sou eu mesmo organizando as tarefas.
+- O backlog acima serviu como lista do que precisa ser feito, com prioridade.
+- As Sprints foram ciclos de 1 semana para entregar partes funcionantes do sistema.
+- No final de cada Sprint, eu revisava o que funcionou e o que precisava ser ajustado antes da próxima etapa.
 
-### Artefatos Scrum
-- **Product Backlog:** Lista acima com todos os itens
-- **Sprint Backlog:** Subconjunto do Product Backlog selecionado por Sprint
-- **Incremento:** Versão funcional do produto após cada Sprint
+Essa adaptação foi suficiente para organizar o trabalho sem complicações.
