@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cupcake Gourmet - Administração</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">
+                <span class="logo-icon">🧁</span>
+                <span>Cupcake Gourmet</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Início</a></li>
+                <li><a href="produtos.html">Produtos</a></li>
+                <li><a href="carrinho.html">Carrinho <span class="cart-count" id="cartCount">0</span></a></li>
+                <li><a href="acompanhar.html">Acompanhar</a></li>
+                <li><a href="admin.html" class="active">Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="section">
+            <h2>Painel Administrativo</h2>
+
+            <div class="admin-tabs">
+                <button class="admin-tab active" onclick="switchTab('products')">Produtos</button>
+                <button class="admin-tab" onclick="switchTab('orders')">Pedidos</button>
+            </div>
+
+            <div id="tabProducts" class="admin-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                    <h3>Gerenciar Produtos</h3>
+                    <button class="btn btn-sm" onclick="openProductModal()">+ Cadastrar Produto</button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Imagem</th>
+                                <th>Nome</th>
+                                <th>Categoria</th>
+                                <th>Preço</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTable">
+                            <tr><td colspan="6" style="text-align: center; padding: 2rem; color: #8b7355;">Carregando produtos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="tabOrders" class="admin-panel hidden">
+                <h3 style="margin-bottom: 1.5rem;">Gerenciar Pedidos</h3>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Total</th>
+                                <th>Pagamento</th>
+                                <th>Status</th>
+                                <th>Data</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTable">
+                            <tr><td colspan="7" style="text-align: center; padding: 2rem; color: #8b7355;">Carregando pedidos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Cadastrar Produto</h3>
+                <button class="modal-close" onclick="closeProductModal()">&times;</button>
+            </div>
+            <form id="productForm">
+                <input type="hidden" id="productId">
+                <div class="form-group">
+                    <label for="p_name">Nome do Produto *</label>
+                    <input type="text" id="p_name" required placeholder="Ex: Cupcake de Chocolate">
+                </div>
+                <div class="form-group">
+                    <label for="p_description">Descrição *</label>
+                    <textarea id="p_description" required rows="3" placeholder="Descreva o produto"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="p_price">Preço (R$) *</label>
+                        <input type="number" id="p_price" required step="0.01" min="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="p_category">Categoria *</label>
+                        <input type="text" id="p_category" required placeholder="Ex: Chocolate">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="p_image">URL da Imagem *</label>
+                    <input type="url" id="p_image" required placeholder="https://...">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-success" id="modalSubmitBtn">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="orderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Detalhes do Pedido</h3>
+                <button class="modal-close" onclick="closeOrderModal()">&times;</button>
+            </div>
+            <div id="orderModalContent"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Cupcake Gourmet - Todos os direitos reservados</p>
+    </footer>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

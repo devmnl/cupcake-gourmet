@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cupcake Gourmet - Acompanhar Pedido</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">
+                <span class="logo-icon">🧁</span>
+                <span>Cupcake Gourmet</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Início</a></li>
+                <li><a href="produtos.html">Produtos</a></li>
+                <li><a href="carrinho.html">Carrinho <span class="cart-count" id="cartCount">0</span></a></li>
+                <li><a href="acompanhar.html" class="active">Acompanhar</a></li>
+                <li><a href="admin.html">Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="section">
+            <h2>Acompanhar Pedido</h2>
+
+            <div class="form-container" id="searchContainer">
+                <p style="margin-bottom: 1rem; text-align: center;">Informe o número do seu pedido para acompanhar o status.</p>
+                <div class="form-group">
+                    <label for="orderId">Número do Pedido *</label>
+                    <input type="number" id="orderId" min="1" required placeholder="Digite o número do pedido">
+                </div>
+                <button class="btn" style="width: 100%;" onclick="searchOrder()">Buscar Pedido</button>
+                <div id="searchError" class="error-message hidden" style="margin-top: 1rem;"></div>
+            </div>
+
+            <div id="orderResult" class="hidden" style="margin-top: 2rem;">
+                <div class="order-details">
+                    <h3 style="margin-bottom: 1.5rem; color: #c44569;">Detalhes do Pedido</h3>
+                    <div class="detail-row">
+                        <span class="detail-label">Número do Pedido:</span>
+                        <span class="detail-value" id="resOrderId"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Cliente:</span>
+                        <span class="detail-value" id="resCustomer"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Total:</span>
+                        <span class="detail-value" style="font-weight: bold; color: #c44569;" id="resTotal"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Pagamento:</span>
+                        <span class="detail-value" id="resPayment"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Data/Hora:</span>
+                        <span class="detail-value" id="resDate"></span>
+                    </div>
+
+                    <h3 style="margin: 1.5rem 0 1rem; color: #c44569;">Status do Pedido</h3>
+                    <div class="status-tracker" id="statusTracker"></div>
+
+                    <h3 style="margin: 1.5rem 0 1rem; color: #c44569;">Itens do Pedido</h3>
+                    <div id="resItems"></div>
+
+                    <div style="margin-top: 2rem;">
+                        <button class="btn btn-secondary" onclick="document.getElementById('orderResult').classList.add('hidden'); document.getElementById('searchContainer').classList.remove('hidden');">Nova Consulta</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Cupcake Gourmet - Todos os direitos reservados</p>
+    </footer>
+
+    <script src="js/acompanhar.js"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cupcake Gourmet - Produtos</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">
+                <span class="logo-icon">🧁</span>
+                <span>Cupcake Gourmet</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Início</a></li>
+                <li><a href="produtos.html" class="active">Produtos</a></li>
+                <li><a href="carrinho.html">Carrinho <span class="cart-count" id="cartCount">0</span></a></li>
+                <li><a href="acompanhar.html">Acompanhar</a></li>
+                <li><a href="admin.html">Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="section">
+            <h2>Nosso Cardápio</h2>
+            <p style="text-align: center; color: #6b5144; margin-bottom: 2rem;">Escolha seus cupcakes favoritos e monte seu pedido!</p>
+            <div class="products-grid" id="productsGrid">
+                <div class="loading" style="grid-column: 1 / -1;">Carregando produtos...</div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Cupcake Gourmet - Todos os direitos reservados</p>
+    </footer>
+
+    <script src="js/produtos.js"></script>
+</body>
+</html>
