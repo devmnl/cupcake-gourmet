@@ -1,4 +1,4 @@
-const API_A = 'http://localhost:5000/api';
+const API = 'https://cupcake-gourmet-wjam.onrender.com/api';
 
 const STATUS = [
     { n: 1, t: 'Pedido recebido' },

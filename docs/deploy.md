@@ -195,8 +195,8 @@ Para trabalho acadêmico isso costuma ser aceitável (basta avisar ao professor 
 
 | Item | Valor |
 |------|-------|
-| Plataforma escolhida: | |
-| URL do backend (API): | |
-| URL do frontend (site): | |
-| Data do deploy: | |
-| Observações: | |
+| Plataforma escolhida: | Render (backend) + GitHub Pages (frontend) |
+| URL do backend (API): | https://cupcake-gourmet-wjam.onrender.com/api |
+| URL do frontend (site): | https://devmnl.github.io/cupcake-gourmet/frontend/ |
+| Data do deploy: | 27/08/2026 |
+| Observações: | SQLite no Render pode resetar após período sem uso (sono). Produtos iniciais são recriados automaticamente. |

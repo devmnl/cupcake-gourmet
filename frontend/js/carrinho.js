@@ -1,4 +1,4 @@
-const API_C = 'http://localhost:5000/api';
+const API = 'https://cupcake-gourmet-wjam.onrender.com/api';
 
 function moeda(v) { return 'R$ ' + parseFloat(v).toFixed(2).replace('.', ','); }
 

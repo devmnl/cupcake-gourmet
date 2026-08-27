@@ -1,4 +1,4 @@
-const API = 'http://localhost:5000/api';
+const API = 'https://cupcake-gourmet-wjam.onrender.com/api';
 let listaProdutos = [];
 
 function moeda(v) {
