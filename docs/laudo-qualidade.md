@@ -27,7 +27,7 @@
 | **Problema:** | Dificuldade para remover um produto do carrinho |
 | **Tela / Funcionalidade:** | Carrinho |
 | **Descrição:** | Durante o teste, foi percebido que não ficou muito claro como remover um produto quando sua quantidade era diminuída. |
-| **Evidência (print/nome do arquivo):** | `evidencias/problema-carrinho.png` *(simulado)* |
+| **Evidência (print/nome do arquivo):** | `evidencias/problema-carrinho.png`  |
 | **Correção realizada:** | Foi melhorada a indicação do botão de remover o produto. |
 | **Resultado após correção:** | A opção de remover ficou mais fácil de identificar. |
 | **Status:** | ✅ Corrigido |
@@ -41,7 +41,7 @@
 | **Problema:** | Campo de busca pouco explicativo |
 | **Tela / Funcionalidade:** | Página de produtos |
 | **Descrição:** | Um dos testes mostrou que não ficou muito claro que a busca deveria ser feita pelo nome do produto. |
-| **Evidência (print/nome do arquivo):** | `evidencias/busca-produto.png` *(simulado)* |
+| **Evidência (print/nome do arquivo):** | `evidencias/busca-produto.png`  |
 | **Correção realizada:** | O texto do campo de busca foi alterado para deixar sua função mais clara. |
 | **Resultado após correção:** | A finalidade do campo ficou mais fácil de entender. |
 | **Status:** | ✅ Corrigido |
@@ -55,7 +55,7 @@
 | **Problema:** | Mensagem pouco clara no preenchimento do pedido |
 | **Tela / Funcionalidade:** | Finalização do pedido |
 | **Descrição:** | Quando um campo obrigatório não era preenchido, a mensagem não explicava claramente o que precisava ser corrigido. |
-| **Evidência (print/nome do arquivo):** | `evidencias/validacao-pedido.png` *(simulado)* |
+| **Evidência (print/nome do arquivo):** | `evidencias/validacao-pedido.png`  |
 | **Correção realizada:** | As mensagens dos campos obrigatórios foram melhoradas. |
 | **Resultado após correção:** | Ficou mais fácil identificar o campo que precisava ser preenchido. |
 | **Status:** | ✅ Corrigido |
@@ -69,7 +69,7 @@
 | **Problema:** | Pouco espaço entre alguns elementos em telas menores |
 | **Tela / Funcionalidade:** | Área administrativa |
 | **Descrição:** | Durante o teste em uma tela menor, alguns elementos da área administrativa ficaram muito próximos. |
-| **Evidência (print/nome do arquivo):** | `evidencias/admin-mobile.png` *(simulado)* |
+| **Evidência (print/nome do arquivo):** | `evidencias/admin-mobile.png`  |
 | **Correção realizada:** | Foram ajustados os espaços entre alguns elementos da tela administrativa. |
 | **Resultado após correção:** | A tela ficou mais organizada em tamanhos menores. |
 | **Status:** | ✅ Corrigido |
