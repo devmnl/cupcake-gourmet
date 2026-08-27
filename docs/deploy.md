@@ -57,17 +57,137 @@ http://SEU_IP:5000/static/index.html
 
 ---
 
-## Opção 3 — Hospedar Front e Back Separados
+## Opção 3 — Hospedar Backend no Render (passo a passo completo)
 
-### Backend: Render / Railway
-São plataformas PaaS que rodam Python. Basta conectar o repositório do GitHub e configurar:
-- Build: `pip install -r requirements.txt`
-- Run: `cd backend && gunicorn app:app` (adicione `gunicorn` no requirements.txt)
+O Render é uma das plataformas mais fáceis para hospedar Flask gratuitamente (plano Free).
 
-⚠️ Atenção: o SQLite nessas plataformas (plano gratuito) geralmente é apagado quando o servidor reinicia. Para trabalho acadêmico temporário costuma ser ok.
+### Passo 0 — Preparar o repositório (já feito ✔️)
 
-### Frontend: GitHub Pages / Netlify
-Suba a pasta `frontend` como site estático e depois altere a URL da API nos arquivos `.js` para o endereço do backend.
+O seu repositório já está estruturado assim:
+```
+cupcake-gourmet/
+├── backend/
+│   └── app.py        ← Flask API
+├── frontend/         ← HTML/CSS/JS
+├── docs/
+├── tests/
+├── requirements.txt  ← Já inclui gunicorn
+└── README.md
+```
+
+Seu `requirements.txt` deve ter 3 linhas:
+```
+Flask==3.0.0
+flask-cors==4.0.0
+gunicorn==21.2.0
+```
+
+### Passo 1 — Criar conta no Render
+
+1. Acesse https://render.com
+2. Clique em **Get Started** → faça login com sua conta do **GitHub** (assim ele conecta direto no repositório).
+3. Autorize o Render a acessar o seu repo.
+
+### Passo 2 — Criar um Web Service
+
+1. No painel do Render, clique em **New** → **Web Service**
+2. Selecione o seu repositório: `devmnl/cupcake-gourmet`
+3. Clique em **Connect**
+
+### Passo 3 — Configurar o serviço (TELA IMPORTANTE)
+
+Preencha exatamente assim:
+
+| Campo | Valor a colocar |
+|-------|------------------|
+| **Name** | `cupcake-gourmet-api` (ou qualquer nome, vai ficar na URL) |
+| **Region** | `São Paulo` ou `Virginia` (qualquer um) |
+| **Branch** | `main` |
+| **Runtime** | **Python 3** |
+| **Build Command** | `pip install -r requirements.txt` |
+| **Start Command** | `cd backend && gunicorn app:app` |
+| **Plan** | **Free** (0 MB RAM / 0.5 CPU - de graça) |
+
+### Passo 4 — Variáveis de Ambiente (opcional, não precisa)
+
+Não precisa de nenhuma variável para o seu projeto. O SQLite já funciona direto.
+
+### Passo 5 — Clicar em "Create Web Service"
+
+Espere o build terminar. O Render vai:
+1. Clonar seu repo do GitHub
+2. Rodar `pip install -r requirements.txt` (instala Flask, flask-cors, gunicorn)
+3. Rodar `cd backend && gunicorn app:app` (inicia a API)
+
+Quando aparecer **"Live ⚡"** na barra superior, o backend está no ar!
+
+A URL do backend vai ser algo tipo:
+```
+https://cupcake-gourmet-api.onrender.com
+```
+
+### Passo 6 — Testar a API online
+
+No navegador, acesse:
+```
+https://SUA-URL.onrender.com/api/products
+```
+
+Deve aparecer a lista dos 6 cupcakes em JSON. Se aparecer, tá funcionando ✔️
+
+### Passo 7 — Atualizar o frontend para apontar pro backend online
+
+Abra CADA arquivo .js em `frontend/js/` e troque a linha:
+```js
+const API = 'http://localhost:5000/api';
+```
+ou
+```js
+const API_P = 'http://localhost:5000/api';
+```
+
+por:
+```js
+const API = 'https://SUA-URL.onrender.com/api';
+```
+ou
+```js
+const API_P = 'https://SUA-URL.onrender.com/api';
+```
+
+Arquivos que precisam ser editados:
+- `produtos.js`
+- `carrinho.js`
+- `pedido.js`
+- `acompanhar.js`
+- `admin.js`
+
+Depois commita e pusha:
+```
+git add .
+git commit -m "Atualizada URL da API para Render"
+git push
+```
+
+### Passo 8 — Hospedar o frontend no GitHub Pages (simples)
+
+1. No GitHub, entre no repo → **Settings** → **Pages**
+2. Em **Branch**, selecione `main` e a pasta **/ (root)** → Save
+3. Depois de uns 2 minutos, o site fica online em:
+   ```
+   https://devmnl.github.io/cupcake-gourmet/frontend/
+   ```
+4. Testa o fluxo todo pelo site online!
+
+### ⚠️ Aviso importante sobre SQLite no Render (Free)
+
+Quando o Render fica sem acesso por uns 15 minutos, ele "dorme" a instância. Ao acordar, **o arquivo `cupcake.db` pode ser apagado** (porque o Render recria a pasta temporária).
+
+Isso significa que:
+- Os **6 produtos iniciais** são recriados automaticamente (tem seed no `app.py`) ✔️
+- **Pedidos feitos antes do "sono"** podem sumir 😕
+
+Para trabalho acadêmico isso costuma ser aceitável (basta avisar ao professor sobre essa limitação da hospedagem gratuita). Se quiser preservar os dados permanentemente, precisa usar um banco externo tipo PostgreSQL ou migrar pro PythonAnywhere (Opção 1).
 
 ---
 
