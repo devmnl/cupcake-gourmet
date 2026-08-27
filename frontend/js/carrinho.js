@@ -55,7 +55,7 @@ async function render() {
     let subtotal = 0;
     for (const item of c) {
         try {
-            const r = await fetch(API_C + '/products/' + item.product_id);
+            const r = await fetch(API + '/products/' + item.product_id);
             if (!r.ok) continue;
             const p = await r.json();
             const totItem = p.price * item.quantity;
