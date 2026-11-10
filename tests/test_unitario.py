@@ -25,50 +25,6 @@ class TestStatusPedido(unittest.TestCase):
         self.assertEqual(len(STATUS), 4)
 
 
-class TestAutenticacaoAdmin(unittest.TestCase):
-
-    def setUp(self):
-        self.variaveis = patch.dict(os.environ, {
-            'ADMIN_USERNAME': 'admin-teste',
-            'ADMIN_PASSWORD': 'senha-teste-segura'
-        })
-        self.variaveis.start()
-        self.cliente = app.test_client()
-
-    def tearDown(self):
-        self.variaveis.stop()
-
-    def test_rotas_administrativas_bloqueadas_sem_token(self):
-        self.assertEqual(self.cliente.get('/api/orders').status_code, 401)
-        self.assertEqual(self.cliente.get('/api/admin/orders/1').status_code, 401)
-        self.assertEqual(self.cliente.post('/api/products', json={}).status_code, 401)
-        self.assertEqual(
-            self.cliente.put('/api/orders/1/status', json={'status': 2}).status_code,
-            401
-        )
-
-    def test_login_emite_token_valido(self):
-        resposta = self.cliente.post('/api/admin/login', json={
-            'username': 'admin-teste',
-            'password': 'senha-teste-segura'
-        })
-        self.assertEqual(resposta.status_code, 200)
-        token = resposta.get_json()['token']
-        sessao = self.cliente.get(
-            '/api/admin/session',
-            headers={'Authorization': f'Bearer {token}'}
-        )
-        self.assertEqual(sessao.status_code, 200)
-        self.assertTrue(sessao.get_json()['authenticated'])
-
-    def test_login_rejeita_credenciais_incorretas(self):
-        resposta = self.cliente.post('/api/admin/login', json={
-            'username': 'admin-teste',
-            'password': 'senha-incorreta'
-        })
-        self.assertEqual(resposta.status_code, 401)
-
-
 class TestAutenticacaoCliente(unittest.TestCase):
 
     def setUp(self):
@@ -140,6 +96,15 @@ class TestAutenticacaoCliente(unittest.TestCase):
         self.assertEqual(resposta.status_code, 201)
         pedido_id = resposta.get_json()['id']
 
+        historico_proprio = self.cliente.get('/api/customer/orders', headers={
+            'Authorization': f'Bearer {self.token_cliente}'
+        })
+        self.assertEqual(historico_proprio.status_code, 200)
+        self.assertEqual(
+            [pedido['id'] for pedido in historico_proprio.get_json()],
+            [pedido_id]
+        )
+
         outro_cliente = self.cliente.post('/api/customer/register', json={
             'email': 'outro@exemplo.com',
             'password': 'senha-segura-456'
@@ -170,6 +135,12 @@ class TestAutenticacaoCliente(unittest.TestCase):
             self.cliente.post('/api/orders', json={}).status_code,
             401
         )
+
+    def test_api_administrativa_removida(self):
+        self.assertEqual(self.cliente.post('/api/admin/login', json={}).status_code, 404)
+        self.assertEqual(self.cliente.get('/api/admin/orders/1').status_code, 404)
+        self.assertEqual(self.cliente.get('/api/orders').status_code, 405)
+        self.assertEqual(self.cliente.post('/api/products', json={}).status_code, 405)
 
     def test_migracao_mantem_pedidos_antigos_sem_vinculo(self):
         database_legado = os.path.join(self.diretorio.name, 'legado.db')

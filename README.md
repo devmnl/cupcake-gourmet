@@ -51,17 +51,6 @@ O JavaScript utiliza `fetch()` para enviar e receber informações da API criada
 * Receber o número do pedido
 * Consultar apenas os próprios pedidos após entrar na conta
 
-### Administrador
-
-* Acessar o painel com usuário e senha
-* Visualizar produtos
-* Cadastrar produtos
-* Editar produtos
-* Excluir produtos
-* Visualizar pedidos
-* Ver os detalhes dos pedidos
-* Alterar o status dos pedidos
-
 Os status utilizados são:
 
 1. Pedido recebido
@@ -80,7 +69,6 @@ cupcake-gourmet/
 │   ├── carrinho.html
 │   ├── finalizar.html
 │   ├── acompanhar.html
-│   ├── admin.html
 │   ├── css/
 │   └── js/
 │
@@ -195,22 +183,11 @@ http://localhost:5000
 ```
 
 O banco de dados SQLite é criado automaticamente quando o sistema é iniciado pela primeira vez.
-Para finalizar pedidos e consultar o histórico, o cliente precisa criar uma conta e entrar em **Minha conta**. Os pedidos criados antes da implantação do login não são associados automaticamente a contas e continuam disponíveis apenas no painel administrativo.
+Para finalizar pedidos e consultar o histórico, o cliente precisa criar uma conta e entrar em **Minha conta**. Os pedidos criados antes da implantação das contas não são associados automaticamente a clientes e não aparecem no histórico de nenhuma conta.
 
-### Configurar o acesso administrativo
+### Chave de sessão em produção
 
-Antes de iniciar o servidor, configure as credenciais do administrador e uma chave secreta forte. Não coloque esses valores no código nem os compartilhe:
-
-No PowerShell:
-
-```powershell
-$env:ADMIN_USERNAME="admin"
-$env:ADMIN_PASSWORD="sua-senha-forte"
-$env:SECRET_KEY="gere-uma-chave-aleatoria-longa"
-python backend/app.py
-```
-
-Configure as mesmas três variáveis no ambiente de hospedagem do backend. Sem `ADMIN_USERNAME` e `ADMIN_PASSWORD`, as funções administrativas ficam indisponíveis. O login cria um token com validade de 8 horas; sair do painel remove o token deste navegador.
+No Render, configure `SECRET_KEY` como uma chave aleatória longa e mantenha o mesmo valor entre reinicializações e processos do backend. Sem essa chave, o backend não inicia em produção; uma chave que muda entre processos impede a validação das sessões dos clientes.
 
 ## Testes
 
@@ -236,7 +213,7 @@ python -m unittest discover -s tests -p "test_unitario.py" -v
 
 ### Testes de API (testes reais)
 
-Também existe o arquivo `tests/test_api.py` com testes que se conectam diretamente à API (precisa do Flask rodando em `http://localhost:5000`). Para testar a alteração de status, configure `ADMIN_USERNAME` e `ADMIN_PASSWORD` no ambiente do script com os mesmos valores definidos no servidor.
+Também existe o arquivo `tests/test_api.py` com testes que se conectam diretamente à API (precisa do Flask rodando em `http://localhost:5000`).
 
 ### Testes com colegas
 

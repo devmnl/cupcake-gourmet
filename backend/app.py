@@ -3,53 +3,27 @@ from flask_cors import CORS
 from functools import wraps
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 from werkzeug.security import check_password_hash, generate_password_hash
-import hmac
 import secrets
 import sqlite3
 import os
 import re
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or secrets.token_hex(32)
+secret_key = os.environ.get('SECRET_KEY')
+if not secret_key and (
+    os.environ.get('RENDER', '').lower() == 'true'
+    or os.environ.get('FLASK_ENV') == 'production'
+):
+    raise RuntimeError('Configure uma SECRET_KEY fixa no ambiente de producao.')
+app.config['SECRET_KEY'] = secret_key or secrets.token_hex(32)
 CORS(app)
 
 DB_PATH = os.path.join(os.path.dirname(__file__), 'cupcake.db')
-ADMIN_TOKEN_MAX_AGE = 8 * 60 * 60
 CUSTOMER_TOKEN_MAX_AGE = 8 * 60 * 60
-
-
-def serializer_admin():
-    return URLSafeTimedSerializer(app.config['SECRET_KEY'], salt='admin-auth')
 
 
 def serializer_cliente():
     return URLSafeTimedSerializer(app.config['SECRET_KEY'], salt='customer-auth')
-
-
-def exigir_admin(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        usuario = os.environ.get('ADMIN_USERNAME')
-        senha = os.environ.get('ADMIN_PASSWORD')
-        if not usuario or not senha:
-            return jsonify({'error': 'Login administrativo nao configurado no servidor'}), 503
-
-        esquema, _, token = request.headers.get('Authorization', '').partition(' ')
-        if esquema.lower() != 'bearer' or not token:
-            return jsonify({'error': 'Autenticacao necessaria'}), 401
-
-        try:
-            dados = serializer_admin().loads(token, max_age=ADMIN_TOKEN_MAX_AGE)
-        except (BadSignature, SignatureExpired):
-            return jsonify({'error': 'Sessao invalida ou expirada'}), 401
-
-        if not isinstance(dados, dict) or not hmac.compare_digest(
-            str(dados.get('username', '')).encode('utf-8'),
-            usuario.encode('utf-8')
-        ):
-            return jsonify({'error': 'Sessao invalida ou expirada'}), 401
-        return func(*args, **kwargs)
-    return wrapper
 
 
 def exigir_cliente(func):
@@ -254,38 +228,6 @@ def validar_sessao_cliente():
     return jsonify({'authenticated': True, 'email': cliente['email']})
 
 
-@app.route('/api/admin/login', methods=['POST'])
-def login_admin():
-    usuario_configurado = os.environ.get('ADMIN_USERNAME')
-    senha_configurada = os.environ.get('ADMIN_PASSWORD')
-    if not usuario_configurado or not senha_configurada:
-        return jsonify({'error': 'Login administrativo nao configurado no servidor'}), 503
-
-    dados = request.get_json(silent=True)
-    if not isinstance(dados, dict):
-        return jsonify({'error': 'Informe usuario e senha'}), 400
-    usuario = str(dados.get('username', ''))
-    senha = str(dados.get('password', ''))
-    usuario_valido = hmac.compare_digest(
-        usuario.encode('utf-8'), usuario_configurado.encode('utf-8')
-    )
-    senha_valida = hmac.compare_digest(
-        senha.encode('utf-8'), senha_configurada.encode('utf-8')
-    )
-    if not usuario_valido or not senha_valida:
-        return jsonify({'error': 'Usuario ou senha incorretos'}), 401
-
-    return jsonify({
-        'token': serializer_admin().dumps({'username': usuario_configurado})
-    })
-
-
-@app.route('/api/admin/session', methods=['GET'])
-@exigir_admin
-def validar_sessao_admin():
-    return jsonify({'authenticated': True})
-
-
 @app.route('/api/products', methods=['GET'])
 def listar_produtos():
     try:
@@ -310,102 +252,19 @@ def buscar_produto(id):
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/api/products', methods=['POST'])
-@exigir_admin
-def criar_produto():
-    try:
-        d = request.get_json()
-        if not d.get('name') or not d.get('description') or not d.get('price') or not d.get('category') or not d.get('image'):
-            return jsonify({'error': 'Preencha todos os campos'}), 400
-        if d['price'] <= 0:
-            return jsonify({'error': 'Preco invalido'}), 400
-        conn = conectar()
-        c = conn.cursor()
-        c.execute(
-            'INSERT INTO products (name, description, price, category, image) VALUES (?, ?, ?, ?, ?)',
-            (d['name'], d['description'], d['price'], d['category'], d['image'])
-        )
-        conn.commit()
-        novo_id = c.lastrowid
-        conn.close()
-        return jsonify({'id': novo_id, 'message': 'Produto cadastrado'}), 201
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
-@app.route('/api/products/<int:id>', methods=['PUT'])
-@exigir_admin
-def atualizar_produto(id):
-    try:
-        d = request.get_json()
-        conn = conectar()
-        existe = conn.execute('SELECT id FROM products WHERE id = ?', (id,)).fetchone()
-        if not existe:
-            conn.close()
-            return jsonify({'error': 'Produto nao encontrado'}), 404
-        conn.execute(
-            'UPDATE products SET name=?, description=?, price=?, category=?, image=? WHERE id=?',
-            (d['name'], d['description'], d['price'], d['category'], d['image'], id)
-        )
-        conn.commit()
-        conn.close()
-        return jsonify({'message': 'Produto atualizado'})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
-@app.route('/api/products/<int:id>', methods=['DELETE'])
-@exigir_admin
-def deletar_produto(id):
-    try:
-        conn = conectar()
-        existe = conn.execute('SELECT id FROM products WHERE id = ?', (id,)).fetchone()
-        if not existe:
-            conn.close()
-            return jsonify({'error': 'Produto nao encontrado'}), 404
-        conn.execute('DELETE FROM products WHERE id = ?', (id,))
-        conn.commit()
-        conn.close()
-        return jsonify({'message': 'Produto excluido'})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
-@app.route('/api/orders', methods=['GET'])
-@exigir_admin
-def listar_pedidos():
-    try:
-        conn = conectar()
-        pedidos = conn.execute('SELECT * FROM orders ORDER BY created_at DESC').fetchall()
-        resultado = []
-        for p in pedidos:
-            pd = dict(p)
-            pd['status_text'] = STATUS.get(pd['status'], 'Desconhecido')
-            resultado.append(pd)
-        conn.close()
-        return jsonify(resultado)
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
 @app.route('/api/orders/<int:id>', methods=['GET'])
 @exigir_cliente
 def buscar_pedido(id):
     return obter_pedido(id, g.customer_id)
 
 
-def obter_pedido(id, customer_id=None):
+def obter_pedido(id, customer_id):
     try:
         conn = conectar()
-        if customer_id is None:
-            pedido = conn.execute(
-                'SELECT * FROM orders WHERE id = ?', (id,)
-            ).fetchone()
-        else:
-            pedido = conn.execute(
-                'SELECT * FROM orders WHERE id = ? AND customer_id = ?',
-                (id, customer_id)
-            ).fetchone()
+        pedido = conn.execute(
+            'SELECT * FROM orders WHERE id = ? AND customer_id = ?',
+            (id, customer_id)
+        ).fetchone()
         if not pedido:
             conn.close()
             return jsonify({'error': 'Pedido nao encontrado'}), 404
@@ -421,12 +280,6 @@ def obter_pedido(id, customer_id=None):
         return jsonify(pd)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
-
-@app.route('/api/admin/orders/<int:id>', methods=['GET'])
-@exigir_admin
-def buscar_pedido_admin(id):
-    return obter_pedido(id)
 
 
 @app.route('/api/customer/orders', methods=['GET'])
@@ -453,7 +306,7 @@ def listar_pedidos_cliente():
 @app.route('/api/customer/orders/<int:id>', methods=['GET'])
 @exigir_cliente
 def buscar_pedido_cliente(id):
-    return buscar_pedido(id)
+    return obter_pedido(id, g.customer_id)
 
 
 @app.route('/api/orders', methods=['POST'])
@@ -484,27 +337,6 @@ def criar_pedido():
         conn.commit()
         conn.close()
         return jsonify({'id': pedido_id, 'message': 'Pedido criado'}), 201
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
-@app.route('/api/orders/<int:id>/status', methods=['PUT'])
-@exigir_admin
-def atualizar_status(id):
-    try:
-        d = request.get_json()
-        novo = d.get('status')
-        if novo not in (1, 2, 3, 4):
-            return jsonify({'error': 'Status invalido'}), 400
-        conn = conectar()
-        existe = conn.execute('SELECT id FROM orders WHERE id = ?', (id,)).fetchone()
-        if not existe:
-            conn.close()
-            return jsonify({'error': 'Pedido nao encontrado'}), 404
-        conn.execute('UPDATE orders SET status = ? WHERE id = ?', (novo, id))
-        conn.commit()
-        conn.close()
-        return jsonify({'message': 'Status atualizado'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
