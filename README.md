@@ -189,6 +189,16 @@ Para finalizar pedidos e consultar o histórico, o cliente precisa criar uma con
 
 No Render, configure `SECRET_KEY` como uma chave aleatória longa e mantenha o mesmo valor entre reinicializações e processos do backend. Sem essa chave, o backend não inicia em produção; uma chave que muda entre processos impede a validação das sessões dos clientes.
 
+### Persistência do banco no Render
+
+O SQLite usa `backend/cupcake.db` por padrão. Em hospedagens com sistema de arquivos temporário, como um serviço Render sem disco persistente, os pedidos e contas podem desaparecer após reinicializações ou novos deploys. Para manter os dados:
+
+1. Adicione um disco persistente ao serviço Render, com ponto de montagem `/var/data`.
+2. Configure a variável de ambiente `DATABASE_PATH` com o valor `/var/data/cupcake.db`.
+3. Faça um novo deploy do serviço.
+
+O arquivo de banco existente no armazenamento temporário não é recuperado automaticamente ao configurar o disco persistente.
+
 ## Testes
 
 Foram preparados dois conjuntos de testes para verificar o funcionamento do sistema:

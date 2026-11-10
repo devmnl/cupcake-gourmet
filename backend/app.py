@@ -18,7 +18,10 @@ if not secret_key and (
 app.config['SECRET_KEY'] = secret_key or secrets.token_hex(32)
 CORS(app)
 
-DB_PATH = os.path.join(os.path.dirname(__file__), 'cupcake.db')
+DB_PATH = os.environ.get(
+    'DATABASE_PATH',
+    os.path.join(os.path.dirname(__file__), 'cupcake.db')
+)
 CUSTOMER_TOKEN_MAX_AGE = 8 * 60 * 60
 
 
