@@ -52,6 +52,7 @@ O JavaScript utiliza `fetch()` para enviar e receber informações da API criada
 
 ### Administrador
 
+* Acessar o painel com usuário e senha
 * Visualizar produtos
 * Cadastrar produtos
 * Editar produtos
@@ -184,6 +185,21 @@ http://localhost:5000
 
 O banco de dados SQLite é criado automaticamente quando o sistema é iniciado pela primeira vez.
 
+### Configurar o acesso administrativo
+
+Antes de iniciar o servidor, configure as credenciais do administrador e uma chave secreta forte. Não coloque esses valores no código nem os compartilhe:
+
+No PowerShell:
+
+```powershell
+$env:ADMIN_USERNAME="admin"
+$env:ADMIN_PASSWORD="sua-senha-forte"
+$env:SECRET_KEY="gere-uma-chave-aleatoria-longa"
+python backend/app.py
+```
+
+Configure as mesmas três variáveis no ambiente de hospedagem do backend. Sem `ADMIN_USERNAME` e `ADMIN_PASSWORD`, as funções administrativas ficam indisponíveis. O login cria um token com validade de 8 horas; sair do painel remove o token deste navegador.
+
 ## Testes
 
 Foram preparados dois conjuntos de testes para verificar o funcionamento do sistema:
@@ -203,12 +219,12 @@ O arquivo [tests/test_unitario.py](file:///c:/Users/USER/Desktop/PIT/cupcake-gou
 Para rodar os testes unitários, basta abrir o terminal na pasta do projeto e executar:
 
 ```bash
-python -m unittest tests.test_unitario -v
+python -m unittest discover -s tests -p "test_unitario.py" -v
 ```
 
 ### Testes de API (testes reais)
 
-Também existe o arquivo `tests/test_api.py` com 4 testes básicos que se conectam diretamente à API (precisa do Flask rodando em `http://localhost:5000`).
+Também existe o arquivo `tests/test_api.py` com testes que se conectam diretamente à API (precisa do Flask rodando em `http://localhost:5000`). Para testar a alteração de status, configure `ADMIN_USERNAME` e `ADMIN_PASSWORD` no ambiente do script com os mesmos valores definidos no servidor.
 
 ### Testes com colegas
 
@@ -243,4 +259,3 @@ A proposta foi utilizar tecnologias simples e desenvolver as principais funçõe
 **Projeto:** Cupcake Gourmet — PIT II
 **Curso:** Engenharia de Software
 **Disciplina:** Projeto Integrador Transdisciplinar II
-

@@ -1,6 +1,52 @@
 const API_ADM = 'https://cupcake-gourmet-wjam.onrender.com/api';
+const TOKEN_ADMIN = 'tokenAdmin';
 
 function moeda(v) { return 'R$ ' + parseFloat(v).toFixed(2).replace('.', ','); }
+
+function mostrarLogin(mensagem = '') {
+    document.getElementById('loginAdmin').classList.remove('escondido');
+    document.getElementById('adminConteudo').classList.add('escondido');
+    const erro = document.getElementById('loginErro');
+    erro.textContent = mensagem;
+    erro.classList.toggle('escondido', !mensagem);
+}
+
+function mostrarPainel() {
+    document.getElementById('loginAdmin').classList.add('escondido');
+    document.getElementById('adminConteudo').classList.remove('escondido');
+    carregarProdutos();
+}
+
+function sairAdmin() {
+    sessionStorage.removeItem(TOKEN_ADMIN);
+    document.getElementById('formLoginAdmin').reset();
+    document.querySelectorAll('.modal.ativo').forEach(modal => modal.classList.remove('ativo'));
+    mostrarLogin();
+}
+
+async function requisicaoAdmin(caminho, opcoes = {}) {
+    const token = sessionStorage.getItem(TOKEN_ADMIN);
+    const headers = { ...(opcoes.headers || {}) };
+    if (token) headers.Authorization = 'Bearer ' + token;
+    const resposta = await fetch(API_ADM + caminho, { ...opcoes, headers });
+    if (resposta.status === 401) sairAdmin();
+    return resposta;
+}
+
+async function verificarSessaoAdmin() {
+    const token = sessionStorage.getItem(TOKEN_ADMIN);
+    if (!token) {
+        mostrarLogin();
+        return;
+    }
+
+    try {
+        const resposta = await requisicaoAdmin('/admin/session');
+        if (resposta.ok) mostrarPainel();
+    } catch (e) {
+        mostrarLogin('Não foi possível conectar ao servidor. Tente novamente.');
+    }
+}
 
 function atualizarCont() {
     const c = JSON.parse(localStorage.getItem('carrinho') || '[]');
@@ -25,7 +71,8 @@ function trocarAba(aba) {
 async function carregarProdutos() {
     const tb = document.getElementById('tbProdutos');
     try {
-        const r = await fetch(API_ADM + '/products');
+        const r = await requisicaoAdmin('/products');
+        if (!r.ok) throw new Error('Falha ao carregar produtos');
         const lista = await r.json();
         if (lista.length === 0) {
             tb.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">Nenhum produto.</td></tr>';
@@ -54,7 +101,8 @@ async function carregarProdutos() {
 async function carregarPedidos() {
     const tb = document.getElementById('tbPedidos');
     try {
-        const r = await fetch(API_ADM + '/orders');
+        const r = await requisicaoAdmin('/orders');
+        if (!r.ok) throw new Error('Falha ao carregar pedidos');
         const lista = await r.json();
         if (lista.length === 0) {
             tb.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">Nenhum pedido.</td></tr>';
@@ -88,14 +136,17 @@ function abrirModalProduto(id) {
     document.getElementById('modalTitulo').textContent = id ? 'Editar Produto' : 'Cadastrar Produto';
     document.getElementById('modalSubmit').textContent = id ? 'Atualizar' : 'Cadastrar';
     if (id) {
-        fetch(API_ADM + '/products/' + id).then(r => r.json()).then(p => {
+        requisicaoAdmin('/products/' + id).then(r => {
+            if (!r.ok) throw new Error('Falha ao buscar produto');
+            return r.json();
+        }).then(p => {
             document.getElementById('pId').value = p.id;
             document.getElementById('pNome').value = p.name;
             document.getElementById('pDesc').value = p.description;
             document.getElementById('pPreco').value = p.price;
             document.getElementById('pCat').value = p.category;
             document.getElementById('pImg').value = p.image;
-        });
+        }).catch(() => alert('Erro ao carregar produto.'));
     }
     document.getElementById('modalProduto').classList.add('ativo');
 }
@@ -107,7 +158,7 @@ function editarProduto(id) { abrirModalProduto(id); }
 async function excluirProduto(id) {
     if (!confirm('Excluir produto?')) return;
     try {
-        const r = await fetch(API_ADM + '/products/' + id, { method: 'DELETE' });
+        const r = await requisicaoAdmin('/products/' + id, { method: 'DELETE' });
         const d = await r.json();
         alert(r.ok ? d.message : d.error);
         if (r.ok) carregarProdutos();
@@ -115,6 +166,36 @@ async function excluirProduto(id) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const formLogin = document.getElementById('formLoginAdmin');
+    formLogin.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const botao = document.getElementById('loginSubmit');
+        botao.disabled = true;
+        const dados = {
+            username: document.getElementById('loginUsuario').value.trim(),
+            password: document.getElementById('loginSenha').value
+        };
+        try {
+            const resposta = await fetch(API_ADM + '/admin/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
+            });
+            const resultado = await resposta.json();
+            if (!resposta.ok) {
+                mostrarLogin(resultado.error || 'Não foi possível entrar.');
+                return;
+            }
+            sessionStorage.setItem(TOKEN_ADMIN, resultado.token);
+            mostrarPainel();
+        } catch (e) {
+            mostrarLogin('Não foi possível conectar ao servidor. Tente novamente.');
+        } finally {
+            botao.disabled = false;
+        }
+    });
+
+    document.getElementById('sairAdmin').addEventListener('click', sairAdmin);
     const form = document.getElementById('formProduto');
     if (form) form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -131,9 +212,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (dados.price <= 0) return alert('Preco invalido.');
 
         try {
-            const url = id ? API_ADM + '/products/' + id : API_ADM + '/products';
+            const caminho = id ? '/products/' + id : '/products';
             const metodo = id ? 'PUT' : 'POST';
-            const r = await fetch(url, {
+            const r = await requisicaoAdmin(caminho, {
                 method: metodo,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dados)
@@ -145,12 +226,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     atualizarCont();
-    carregarProdutos();
+    verificarSessaoAdmin();
 });
 
 async function verPedido(id) {
     try {
-        const r = await fetch(API_ADM + '/orders/' + id);
+        const r = await requisicaoAdmin('/admin/orders/' + id);
         if (!r.ok) return alert('Pedido nao encontrado.');
         const o = await r.json();
         const d = new Date(o.created_at);
@@ -190,7 +271,7 @@ async function mudarStatus(id) {
     const num = parseInt(s);
     if (![1,2,3,4].includes(num)) return alert('Status invalido.');
     try {
-        const r = await fetch(API_ADM + '/orders/' + id + '/status', {
+        const r = await requisicaoAdmin('/orders/' + id + '/status', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status: num })

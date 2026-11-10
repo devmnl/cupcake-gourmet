@@ -325,6 +325,30 @@ h3 {
     margin: 0 auto;
 }
 
+.formulario-login {
+    margin-top: 20px;
+}
+
+.formulario-login h3 {
+    margin-bottom: 5px;
+    color: #c44569;
+}
+
+.formulario-login p {
+    margin-bottom: 20px;
+    color: #6b5144;
+}
+
+.formulario-login .btn {
+    width: 100%;
+}
+
+.admin-sessao-acoes {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+}
+
 .campo { margin-bottom: 15px; }
 
 .campo label {

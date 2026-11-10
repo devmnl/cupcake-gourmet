@@ -1,5 +1,6 @@
 import urllib.request
 import json
+import os
 
 BASE = 'http://localhost:5000/api'
 
@@ -14,11 +15,29 @@ def post(path, data):
     with urllib.request.urlopen(req) as resp:
         return resp.status, json.loads(resp.read())
 
-def put(path, data):
+def put(path, data, token=None):
     body = json.dumps(data).encode('utf-8')
-    req = urllib.request.Request(BASE + path, data=body, headers={'Content-Type': 'application/json'}, method='PUT')
+    headers = {'Content-Type': 'application/json'}
+    if token:
+        headers['Authorization'] = 'Bearer ' + token
+    req = urllib.request.Request(BASE + path, data=body, headers=headers, method='PUT')
     with urllib.request.urlopen(req) as resp:
         return resp.status, json.loads(resp.read())
+
+def login_admin():
+    usuario = os.environ.get('ADMIN_USERNAME')
+    senha = os.environ.get('ADMIN_PASSWORD')
+    if not usuario or not senha:
+        raise RuntimeError('Configure ADMIN_USERNAME e ADMIN_PASSWORD para testar o painel.')
+    body = json.dumps({'username': usuario, 'password': senha}).encode('utf-8')
+    req = urllib.request.Request(
+        BASE + '/admin/login',
+        data=body,
+        headers={'Content-Type': 'application/json'},
+        method='POST'
+    )
+    with urllib.request.urlopen(req) as resp:
+        return json.loads(resp.read())['token']
 
 ok = 0
 falhou = 0
@@ -105,7 +124,8 @@ try:
     if not pedido_id:
         falhar('Pedido não criado.')
     else:
-        status, resp = put(f'/orders/{pedido_id}/status', {'status': 3})
+        token = login_admin()
+        status, resp = put(f'/orders/{pedido_id}/status', {'status': 3}, token)
         if status == 200:
             p = get(f'/orders/{pedido_id}')
             if p['status'] == 3:

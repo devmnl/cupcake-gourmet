@@ -27,10 +27,31 @@
         <section class="secao">
             <h2>Painel Administrativo</h2>
 
-            <div class="admin-abas">
-                <button class="admin-aba ativa" onclick="trocarAba('produtos')">Produtos</button>
-                <button class="admin-aba" onclick="trocarAba('pedidos')">Pedidos</button>
+            <div id="loginAdmin" class="formulario formulario-login">
+                <h3>Acesso administrativo</h3>
+                <p>Entre com suas credenciais para gerenciar a loja.</p>
+                <form id="formLoginAdmin">
+                    <div class="campo">
+                        <label for="loginUsuario">Usuário</label>
+                        <input type="text" id="loginUsuario" name="username" autocomplete="username" required>
+                    </div>
+                    <div class="campo">
+                        <label for="loginSenha">Senha</label>
+                        <input type="password" id="loginSenha" name="password" autocomplete="current-password" required>
+                    </div>
+                    <button class="btn" type="submit" id="loginSubmit">Entrar</button>
+                    <div id="loginErro" class="msg-erro escondido" role="alert"></div>
+                </form>
             </div>
+
+            <div id="adminConteudo" class="escondido">
+                <div class="admin-sessao-acoes">
+                    <button class="btn btn-secundario btn-pequeno" id="sairAdmin" type="button">Sair</button>
+                </div>
+                <div class="admin-abas">
+                    <button class="admin-aba ativa" onclick="trocarAba('produtos')">Produtos</button>
+                    <button class="admin-aba" onclick="trocarAba('pedidos')">Pedidos</button>
+                </div>
 
             <div id="abaProdutos" class="admin-painel">
                 <div class="admin-painel-cabecalho">
@@ -76,6 +97,7 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
             </div>
         </section>
     </main>
