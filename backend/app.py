@@ -1,11 +1,13 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, g
 from flask_cors import CORS
 from functools import wraps
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
+from werkzeug.security import check_password_hash, generate_password_hash
 import hmac
 import secrets
 import sqlite3
 import os
+import re
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or secrets.token_hex(32)
@@ -13,10 +15,15 @@ CORS(app)
 
 DB_PATH = os.path.join(os.path.dirname(__file__), 'cupcake.db')
 ADMIN_TOKEN_MAX_AGE = 8 * 60 * 60
+CUSTOMER_TOKEN_MAX_AGE = 8 * 60 * 60
 
 
 def serializer_admin():
     return URLSafeTimedSerializer(app.config['SECRET_KEY'], salt='admin-auth')
+
+
+def serializer_cliente():
+    return URLSafeTimedSerializer(app.config['SECRET_KEY'], salt='customer-auth')
 
 
 def exigir_admin(func):
@@ -44,6 +51,40 @@ def exigir_admin(func):
         return func(*args, **kwargs)
     return wrapper
 
+
+def exigir_cliente(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        esquema, _, token = request.headers.get('Authorization', '').partition(' ')
+        if esquema.lower() != 'bearer' or not token:
+            return jsonify({'error': 'Entre na sua conta para continuar'}), 401
+
+        try:
+            dados = serializer_cliente().loads(token, max_age=CUSTOMER_TOKEN_MAX_AGE)
+        except (BadSignature, SignatureExpired):
+            return jsonify({'error': 'Sessao invalida ou expirada'}), 401
+
+        customer_id = dados.get('customer_id') if isinstance(dados, dict) else None
+        if not isinstance(customer_id, int):
+            return jsonify({'error': 'Sessao invalida ou expirada'}), 401
+
+        conn = conectar()
+        cliente = conn.execute(
+            'SELECT id FROM customers WHERE id = ?', (customer_id,)
+        ).fetchone()
+        conn.close()
+        if not cliente:
+            return jsonify({'error': 'Sessao invalida ou expirada'}), 401
+
+        g.customer_id = customer_id
+        return func(*args, **kwargs)
+    return wrapper
+
+
+def token_cliente(customer_id):
+    return serializer_cliente().dumps({'customer_id': customer_id})
+
+
 STATUS = {
     1: 'Pedido recebido',
     2: 'Em preparacao',
@@ -61,6 +102,13 @@ def conectar():
 def criar_banco():
     conn = conectar()
     c = conn.cursor()
+
+    c.execute('''CREATE TABLE IF NOT EXISTS customers (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT NOT NULL UNIQUE,
+        password_hash TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )''')
 
     c.execute('''CREATE TABLE IF NOT EXISTS products (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -83,13 +131,17 @@ def criar_banco():
         observation TEXT,
         total REAL NOT NULL,
         status INTEGER NOT NULL DEFAULT 1,
+        customer_id INTEGER REFERENCES customers (id),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )''')
 
-    try:
-        conn.execute('ALTER TABLE orders ADD COLUMN observation TEXT')
-    except Exception:
-        pass
+    colunas_pedidos = {
+        coluna['name'] for coluna in c.execute('PRAGMA table_info(orders)').fetchall()
+    }
+    if 'observation' not in colunas_pedidos:
+        c.execute('ALTER TABLE orders ADD COLUMN observation TEXT')
+    if 'customer_id' not in colunas_pedidos:
+        c.execute('ALTER TABLE orders ADD COLUMN customer_id INTEGER REFERENCES customers (id)')
 
     conn.commit()
 
@@ -134,6 +186,72 @@ def criar_banco():
 
 
 criar_banco()
+
+
+@app.route('/api/customer/register', methods=['POST'])
+def registrar_cliente():
+    dados = request.get_json(silent=True)
+    if not isinstance(dados, dict):
+        return jsonify({'error': 'Informe e-mail e senha'}), 400
+
+    email = str(dados.get('email', '')).strip().lower()
+    senha = str(dados.get('password', ''))
+    if len(email) > 254 or not re.fullmatch(r'[^@\s]+@[^@\s]+\.[^@\s]+', email):
+        return jsonify({'error': 'Informe um e-mail valido'}), 400
+    if len(senha) < 8 or len(senha) > 128:
+        return jsonify({'error': 'A senha deve ter entre 8 e 128 caracteres'}), 400
+
+    conn = conectar()
+    try:
+        cursor = conn.execute(
+            'INSERT INTO customers (email, password_hash) VALUES (?, ?)',
+            (email, generate_password_hash(senha))
+        )
+        conn.commit()
+        customer_id = cursor.lastrowid
+    except sqlite3.IntegrityError:
+        conn.close()
+        return jsonify({'error': 'Este e-mail ja possui uma conta'}), 409
+    conn.close()
+    return jsonify({
+        'token': token_cliente(customer_id),
+        'email': email
+    }), 201
+
+
+@app.route('/api/customer/login', methods=['POST'])
+def login_cliente():
+    dados = request.get_json(silent=True)
+    if not isinstance(dados, dict):
+        return jsonify({'error': 'Informe e-mail e senha'}), 400
+
+    email = str(dados.get('email', '')).strip().lower()
+    senha = str(dados.get('password', ''))
+    if len(senha) > 128:
+        return jsonify({'error': 'E-mail ou senha incorretos'}), 401
+    conn = conectar()
+    cliente = conn.execute(
+        'SELECT id, email, password_hash FROM customers WHERE email = ?', (email,)
+    ).fetchone()
+    conn.close()
+    if not cliente or not check_password_hash(cliente['password_hash'], senha):
+        return jsonify({'error': 'E-mail ou senha incorretos'}), 401
+
+    return jsonify({
+        'token': token_cliente(cliente['id']),
+        'email': cliente['email']
+    })
+
+
+@app.route('/api/customer/session', methods=['GET'])
+@exigir_cliente
+def validar_sessao_cliente():
+    conn = conectar()
+    cliente = conn.execute(
+        'SELECT email FROM customers WHERE id = ?', (g.customer_id,)
+    ).fetchone()
+    conn.close()
+    return jsonify({'authenticated': True, 'email': cliente['email']})
 
 
 @app.route('/api/admin/login', methods=['POST'])
@@ -271,10 +389,23 @@ def listar_pedidos():
 
 
 @app.route('/api/orders/<int:id>', methods=['GET'])
+@exigir_cliente
 def buscar_pedido(id):
+    return obter_pedido(id, g.customer_id)
+
+
+def obter_pedido(id, customer_id=None):
     try:
         conn = conectar()
-        pedido = conn.execute('SELECT * FROM orders WHERE id = ?', (id,)).fetchone()
+        if customer_id is None:
+            pedido = conn.execute(
+                'SELECT * FROM orders WHERE id = ?', (id,)
+            ).fetchone()
+        else:
+            pedido = conn.execute(
+                'SELECT * FROM orders WHERE id = ? AND customer_id = ?',
+                (id, customer_id)
+            ).fetchone()
         if not pedido:
             conn.close()
             return jsonify({'error': 'Pedido nao encontrado'}), 404
@@ -295,10 +426,38 @@ def buscar_pedido(id):
 @app.route('/api/admin/orders/<int:id>', methods=['GET'])
 @exigir_admin
 def buscar_pedido_admin(id):
+    return obter_pedido(id)
+
+
+@app.route('/api/customer/orders', methods=['GET'])
+@exigir_cliente
+def listar_pedidos_cliente():
+    try:
+        conn = conectar()
+        pedidos = conn.execute(
+            '''SELECT id, total, status, created_at FROM orders
+               WHERE customer_id = ? ORDER BY created_at DESC''',
+            (g.customer_id,)
+        ).fetchall()
+        resultado = []
+        for pedido in pedidos:
+            item = dict(pedido)
+            item['status_text'] = STATUS.get(item['status'], 'Desconhecido')
+            resultado.append(item)
+        conn.close()
+        return jsonify(resultado)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/customer/orders/<int:id>', methods=['GET'])
+@exigir_cliente
+def buscar_pedido_cliente(id):
     return buscar_pedido(id)
 
 
 @app.route('/api/orders', methods=['POST'])
+@exigir_cliente
 def criar_pedido():
     try:
         d = request.get_json()
@@ -310,11 +469,11 @@ def criar_pedido():
         conn = conectar()
         c = conn.cursor()
         c.execute(
-            '''INSERT INTO orders (customer_name, phone, address, number, complement, neighborhood, payment_method, observation, total, status)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)''',
+            '''INSERT INTO orders (customer_name, phone, address, number, complement, neighborhood, payment_method, observation, total, status, customer_id)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)''',
             (d['customer_name'], d['phone'], d['address'], d['number'],
              d.get('complement', ''), d['neighborhood'], d['payment_method'],
-             d.get('observation', ''), d['total'])
+             d.get('observation', ''), d['total'], g.customer_id)
         )
         pedido_id = c.lastrowid
         for item in d['items']:

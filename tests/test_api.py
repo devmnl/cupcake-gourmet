@@ -1,17 +1,25 @@
 import urllib.request
 import json
 import os
+import uuid
 
 BASE = 'http://localhost:5000/api'
+TOKEN_CLIENTE = None
 
-def get(path):
-    req = urllib.request.Request(BASE + path)
+def get(path, token=None):
+    headers = {}
+    if token or (TOKEN_CLIENTE and (path.startswith('/orders/') or path.startswith('/customer/'))):
+        headers['Authorization'] = 'Bearer ' + (token or TOKEN_CLIENTE)
+    req = urllib.request.Request(BASE + path, headers=headers)
     with urllib.request.urlopen(req) as resp:
         return json.loads(resp.read())
 
-def post(path, data):
+def post(path, data, token=None):
     body = json.dumps(data).encode('utf-8')
-    req = urllib.request.Request(BASE + path, data=body, headers={'Content-Type': 'application/json'}, method='POST')
+    headers = {'Content-Type': 'application/json'}
+    if token:
+        headers['Authorization'] = 'Bearer ' + token
+    req = urllib.request.Request(BASE + path, data=body, headers=headers, method='POST')
     with urllib.request.urlopen(req) as resp:
         return resp.status, json.loads(resp.read())
 
@@ -38,6 +46,17 @@ def login_admin():
     )
     with urllib.request.urlopen(req) as resp:
         return json.loads(resp.read())['token']
+
+def registrar_cliente():
+    global TOKEN_CLIENTE
+    email = f'teste-{uuid.uuid4().hex}@exemplo.com'
+    status, resposta = post('/customer/register', {
+        'email': email,
+        'password': 'senha-teste-segura'
+    })
+    if status != 201:
+        raise RuntimeError(f'Nao foi possivel cadastrar cliente de teste: {resposta}')
+    TOKEN_CLIENTE = resposta['token']
 
 ok = 0
 falhou = 0
@@ -74,6 +93,7 @@ try:
     if len(produtos) == 0:
         falhar('Sem produtos para criar pedido.')
     else:
+        registrar_cliente()
         itens = [
             {'product_id': produtos[0]['id'], 'quantity': 2, 'price': produtos[0]['price']},
             {'product_id': produtos[-1]['id'], 'quantity': 1, 'price': produtos[-1]['price']}
@@ -91,7 +111,7 @@ try:
             'total': total,
             'items': itens
         }
-        status, resp = post('/orders', pedido)
+        status, resp = post('/orders', pedido, TOKEN_CLIENTE)
         if status == 200 or status == 201:
             pedido_id = resp['id']
             passou(f'Pedido #{pedido_id} criado. Total: R$ {total:.2f}')

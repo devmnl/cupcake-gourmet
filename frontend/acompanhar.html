@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cupcake Gourmet - Acompanhar Pedido</title>
+    <title>Cupcake Gourmet - Minha Conta</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -17,7 +17,7 @@
                 <li><a href="index.html">Início</a></li>
                 <li><a href="produtos.html">Produtos</a></li>
                 <li><a href="carrinho.html">Carrinho <span class="cont-carrinho" id="contCarrinho">0</span></a></li>
-                <li><a href="acompanhar.html" class="active">Acompanhar</a></li>
+                <li><a href="acompanhar.html" class="active">Minha conta</a></li>
                 <li><a href="admin.html">Admin</a></li>
             </ul>
         </nav>
@@ -25,16 +25,54 @@
 
     <main>
         <section class="secao">
-            <h2>Acompanhar Pedido</h2>
+            <h2>Minha conta e pedidos</h2>
 
-            <div class="formulario" id="busca">
-                <p style="margin-bottom: 1rem; text-align: center;">Informe o número do seu pedido para acompanhar o status.</p>
-                <div class="campo">
-                    <label for="idPedido">Número do Pedido *</label>
-                    <input type="number" id="idPedido" min="1" required placeholder="Digite o número do pedido">
+            <div class="formulario" id="loginCliente">
+                <h3 style="margin-bottom: 1rem; color: #c44569;">Entre na sua conta</h3>
+                <form id="formLoginCliente">
+                    <div class="campo">
+                        <label for="loginEmail">E-mail</label>
+                        <input type="email" id="loginEmail" autocomplete="email" required>
+                    </div>
+                    <div class="campo">
+                        <label for="loginSenha">Senha</label>
+                        <input type="password" id="loginSenha" autocomplete="current-password" required>
+                    </div>
+                    <button class="btn" type="submit" id="loginSubmit" style="width: 100%;">Entrar</button>
+                </form>
+                <div id="erroLogin" class="msg-erro escondido" role="alert" style="margin-top: 1rem;"></div>
+                <p style="margin-top: 1rem; text-align: center;">
+                    Ainda não tem conta?
+                    <button class="btn btn-secundario btn-pequeno" id="mostrarCadastro" type="button">Criar conta</button>
+                </p>
+
+                <form id="formCadastroCliente" class="escondido" style="margin-top: 1.5rem;">
+                    <h3 style="margin-bottom: 1rem; color: #c44569;">Criar conta</h3>
+                    <div class="campo">
+                        <label for="cadastroEmail">E-mail</label>
+                        <input type="email" id="cadastroEmail" autocomplete="email" required>
+                    </div>
+                    <div class="campo">
+                        <label for="cadastroSenha">Senha (mínimo 8 caracteres)</label>
+                        <input type="password" id="cadastroSenha" minlength="8" maxlength="128" autocomplete="new-password" required>
+                    </div>
+                    <div class="campo">
+                        <label for="confirmarSenha">Confirme a senha</label>
+                        <input type="password" id="confirmarSenha" minlength="8" maxlength="128" autocomplete="new-password" required>
+                    </div>
+                    <button class="btn" type="submit" id="cadastroSubmit" style="width: 100%;">Cadastrar</button>
+                    <button class="btn btn-secundario" id="cancelarCadastro" type="button" style="width: 100%; margin-top: 0.5rem;">Voltar ao login</button>
+                </form>
+            </div>
+
+            <div id="painelCliente" class="escondido">
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                    <p>Conta: <strong id="clienteEmail"></strong></p>
+                    <button class="btn btn-secundario btn-pequeno" id="sairCliente" type="button">Sair</button>
                 </div>
-                <button class="btn" style="width: 100%;" onclick="buscarPedido()">Buscar Pedido</button>
-                <div id="erroBusca" class="msg-erro escondido" style="margin-top: 1rem;"></div>
+                <h3 style="margin-bottom: 1rem; color: #c44569;">Seus pedidos</h3>
+                <div id="listaPedidos"></div>
+                <div id="erroPedidos" class="msg-erro escondido" role="alert"></div>
             </div>
 
             <div id="resultado" class="escondido" style="margin-top: 2rem;">
@@ -72,7 +110,7 @@
                     <div id="rItens"></div>
 
                     <div style="margin-top: 2rem;">
-                        <button class="btn btn-secundario" onclick="document.getElementById('resultado').classList.add('escondido'); document.getElementById('busca').classList.remove('escondido');">Nova Consulta</button>
+                        <button class="btn btn-secundario" id="voltarPedidos" type="button">Voltar aos meus pedidos</button>
                     </div>
                 </div>
             </div>

@@ -1,4 +1,5 @@
 const API_P = 'https://cupcake-gourmet-wjam.onrender.com/api';
+const TOKEN_CLIENTE = 'tokenCliente';
 
 function moeda(v) { return 'R$ ' + parseFloat(v).toFixed(2).replace('.', ','); }
 
@@ -47,6 +48,11 @@ async function carregarTotal() {
 async function enviarPedido(e) {
     e.preventDefault();
     document.getElementById('erroMsg').classList.add('escondido');
+    const token = sessionStorage.getItem(TOKEN_CLIENTE);
+    if (!token) {
+        exigirLoginPedido();
+        return;
+    }
     const c = JSON.parse(localStorage.getItem('carrinho') || '[]');
     if (c.length === 0) return erro('Carrinho vazio!');
 
@@ -79,7 +85,10 @@ async function enviarPedido(e) {
     try {
         const r = await fetch(API_P + '/orders', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer ' + token
+            },
             body: JSON.stringify({
                 customer_name: nome, phone: tel, address: end, number: num,
                 complement: comp, neighborhood: bai, payment_method: pg,
@@ -87,7 +96,10 @@ async function enviarPedido(e) {
             })
         });
         const d = await r.json();
-        if (!r.ok) return erro(d.error || 'Erro ao finalizar.');
+        if (!r.ok) {
+            if (r.status === 401) exigirLoginPedido();
+            return erro(d.error || 'Erro ao finalizar.');
+        }
 
         document.getElementById('numPedido').textContent = d.id;
         document.getElementById('formContainer').classList.add('escondido');
@@ -100,6 +112,37 @@ async function enviarPedido(e) {
     }
 }
 
+function exigirLoginPedido() {
+    document.getElementById('formContainer').classList.add('escondido');
+    document.getElementById('avisoLoginPedido').classList.remove('escondido');
+}
+
+async function validarClientePedido() {
+    const token = sessionStorage.getItem(TOKEN_CLIENTE);
+    if (!token) {
+        exigirLoginPedido();
+        return false;
+    }
+
+    try {
+        const resposta = await fetch(API_P + '/customer/session', {
+            headers: { Authorization: 'Bearer ' + token }
+        });
+        if (!resposta.ok) {
+            sessionStorage.removeItem(TOKEN_CLIENTE);
+            exigirLoginPedido();
+            return false;
+        }
+        document.getElementById('avisoLoginPedido').classList.add('escondido');
+        document.getElementById('formContainer').classList.remove('escondido');
+        return true;
+    } catch (e) {
+        exigirLoginPedido();
+        erro('Não foi possível verificar sua sessão. Tente novamente.');
+        return false;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     atualizarCont();
     carregarTotal();
@@ -109,14 +152,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('formPedido');
     if (form) form.addEventListener('submit', enviarPedido);
 
-    const c = JSON.parse(localStorage.getItem('carrinho') || '[]');
-    if (c.length === 0 && document.getElementById('formContainer')) {
-        document.getElementById('formContainer').innerHTML = `
-            <div class="carrinho-vazio">
-                <div class="icone">🛒</div>
-                <h3>Carrinho vazio</h3>
-                <p style="margin:12px 0;">Adicione produtos para finalizar.</p>
-                <a href="produtos.html" class="btn">Ver Produtos</a>
-            </div>`;
-    }
+    validarClientePedido().then(autenticado => {
+        const c = JSON.parse(localStorage.getItem('carrinho') || '[]');
+        if (autenticado && c.length === 0 && document.getElementById('formContainer')) {
+            document.getElementById('formContainer').innerHTML = `
+                <div class="carrinho-vazio">
+                    <div class="icone">🛒</div>
+                    <h3>Carrinho vazio</h3>
+                    <p style="margin:12px 0;">Adicione produtos para finalizar.</p>
+                    <a href="produtos.html" class="btn">Ver Produtos</a>
+                </div>`;
+        }
+    });
 });

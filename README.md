@@ -37,6 +37,7 @@ O JavaScript utiliza `fetch()` para enviar e receber informações da API criada
 
 ### Cliente
 
+* Criar conta e entrar com e-mail e senha
 * Visualizar a página inicial
 * Visualizar os cupcakes disponíveis
 * Buscar um produto pelo nome
@@ -48,7 +49,7 @@ O JavaScript utiliza `fetch()` para enviar e receber informações da API criada
 * Escolher a forma de pagamento
 * Adicionar uma observação ao pedido
 * Receber o número do pedido
-* Consultar o status do pedido
+* Consultar apenas os próprios pedidos após entrar na conta
 
 ### Administrador
 
@@ -113,7 +114,16 @@ cupcake-gourmet/
 
 Foi utilizado o **SQLite**, por ser um banco simples e adequado para o tamanho deste projeto.
 
-O sistema utiliza três tabelas principais:
+O sistema utiliza as tabelas principais:
+
+### customers
+
+Armazena as contas de clientes. As senhas são armazenadas com hash e nunca em texto puro.
+
+* id
+* email
+* password_hash
+* created_at
 
 ### products
 
@@ -141,6 +151,7 @@ Armazena os pedidos realizados.
 * observation
 * total
 * status
+* customer_id
 * created_at
 
 ### order_items
@@ -184,6 +195,7 @@ http://localhost:5000
 ```
 
 O banco de dados SQLite é criado automaticamente quando o sistema é iniciado pela primeira vez.
+Para finalizar pedidos e consultar o histórico, o cliente precisa criar uma conta e entrar em **Minha conta**. Os pedidos criados antes da implantação do login não são associados automaticamente a contas e continuam disponíveis apenas no painel administrativo.
 
 ### Configurar o acesso administrativo
 
@@ -208,7 +220,7 @@ Foram preparados dois conjuntos de testes para verificar o funcionamento do sist
 
 Foi criado um teste unitário básico utilizando a biblioteca `unittest` do Python, que já vem instalada por padrão.
 
-O arquivo [tests/test_unitario.py](file:///c:/Users/USER/Desktop/PIT/cupcake-gourmet/tests/test_unitario.py) possui **5 testes** para verificar o dicionário de status do pedido:
+O arquivo `tests/test_unitario.py` cobre os status dos pedidos, a autenticação de administrador e cliente, a privacidade entre contas e a migração de pedidos antigos.
 
 * status 1 = Pedido recebido
 * status 2 = Em preparação
